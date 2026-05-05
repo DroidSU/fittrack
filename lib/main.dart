@@ -1,12 +1,20 @@
 import 'package:fittrack/screens/add_meal_screen.dart';
-import 'package:fittrack/screens/home_screen.dart';
+import 'package:fittrack/screens/dashboard_screen.dart';
 import 'package:fittrack/screens/onboarding_screen.dart';
 import 'package:fittrack/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
-void main() {
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  await Hive.openBox("mealsBox");
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -23,7 +31,7 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => DashboardScreen(),
     ),
     GoRoute(
       path: '/add-meal',
