@@ -23,21 +23,27 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
 
     var id = const Uuid().v1();
 
-    final meal = Meals(id: id, name: name, protein: protein);
+    final meal = Meals(
+      id: id,
+      name: name,
+      protein: protein,
+      createdAt: DateTime.now(),
+    );
 
     ref.read(mealProvider.notifier).addMeal(meal);
 
     Navigator.pop(context);
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Add Meal"),
+        elevation: 0,
       ),
       body: SafeArea(
         child: Padding(
@@ -48,10 +54,19 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               // 1. TextField -> Meal name
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(
+                style: theme.textTheme.bodyLarge,
+                decoration: InputDecoration(
                   labelText: "Meal Name",
                   hintText: "e.g. Chicken Breast",
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: theme.colorScheme.primary),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.dividerColor),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -60,10 +75,19 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               TextField(
                 controller: proteinController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
+                style: theme.textTheme.bodyLarge,
+                decoration: InputDecoration(
                   labelText: "Protein (g)",
                   hintText: "e.g. 30",
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: theme.colorScheme.primary),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.dividerColor),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -71,10 +95,12 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               // 3. Button -> "Save Meal"
               ElevatedButton(
                 onPressed: saveMeal,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                style: theme.elevatedButtonTheme.style?.copyWith(
+                  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 16)),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
                 child: const Text(

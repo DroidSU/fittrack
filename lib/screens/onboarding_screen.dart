@@ -6,7 +6,9 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -19,23 +21,21 @@ class OnboardingScreen extends StatelessWidget {
                 fit: BoxFit.cover,
                 height: 400,
               ),
-              const Column(
+              Column(
                 children: [
                   Text(
                     "Welcome to FitTrack",
-                    style: TextStyle(
-                      fontSize: 24,
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     "Track your workouts, meals and achieve your fitness goals",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.textTheme.bodyLarge?.color?.withOpacity(0.6),
                       fontWeight: FontWeight.normal,
-                      color: Colors.grey,
                     ),
                   ),
                 ],
@@ -45,14 +45,16 @@ class OnboardingScreen extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () => context.go('/home'),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  style: theme.elevatedButtonTheme.style?.copyWith(
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                   child: const Text(
                     "Get Started",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

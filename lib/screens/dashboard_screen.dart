@@ -1,7 +1,9 @@
+import 'package:fittrack/features/meals/models/meals.dart';
 import 'package:fittrack/features/meals/providers/meal_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../theme/app_colors.dart';
 import '../widgets/meal_item.dart';
@@ -14,12 +16,13 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final mealsList = ref.watch(mealProvider);
     final totalProtein = ref.watch(totalProteinProvider);
     const targetProtein = 150.0;
     final proteinPercentage = (totalProtein / targetProtein).clamp(0.0, 1.0);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -38,12 +41,11 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 20),
               _ActionButtonsRow(context: context, theme: theme),
               const SizedBox(height: 24),
-              _RecentMealsSection(theme: theme, totalProtein: totalProtein),
+              _RecentMealsSection(theme: theme, totalProtein: totalProtein, mealsList: mealsList),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _BottomNavBar(theme: theme),
     );
   }
 }
@@ -64,14 +66,13 @@ class _HeaderSection extends StatelessWidget {
               "Good Morning, Sujoy",
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               "Let's hit your goals today 💪",
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -79,8 +80,8 @@ class _HeaderSection extends StatelessWidget {
         ),
         const CircleAvatar(
           radius: 24,
-          backgroundColor: Color(0xFFE8EAF6),
-          child: Icon(Icons.person, color: AppColors.primary, size: 30),
+          backgroundColor: AppColors.primaryLight,
+          child: Icon(Icons.person, color: Colors.white, size: 30),
         ),
       ],
     );
@@ -137,16 +138,23 @@ class _ActionButtonsRow extends StatelessWidget {
 class _RecentMealsSection extends StatelessWidget {
   final ThemeData theme;
   final double totalProtein;
-  const _RecentMealsSection({required this.theme, required this.totalProtein});
+  final List<Meals> mealsList;
+
+  const _RecentMealsSection({required this.theme, required this.totalProtein, required this.mealsList});
 
   @override
   Widget build(BuildContext context) {
+    // Get last 3 meals and reverse them to show newest first
+    final recentMeals = mealsList.length > 3
+        ? mealsList.sublist(mealsList.length - 3).reversed.toList()
+        : mealsList.reversed.toList();
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
       ),
       child: Column(
         children: [
@@ -161,7 +169,6 @@ class _RecentMealsSection extends StatelessWidget {
                     "Recent Meals",
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -181,31 +188,42 @@ class _RecentMealsSection extends StatelessWidget {
             ],
           ),
           const Divider(),
-          const MealItem(
-            name: "Oats with Whey",
-            time: "7:30 AM",
-            protein: "25g",
-            image: "🥣",
-          ),
-          const MealItem(
-            name: "Grilled Chicken",
-            time: "1:15 PM",
-            protein: "35g",
-            image: "🍗",
-          ),
-          const MealItem(
-            name: "Paneer Curry",
-            time: "7:45 PM",
-            protein: "20g",
-            image: "🥘",
-          ),
+          if (recentMeals.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  "No meals logged today",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                  ),
+                ),
+              )
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: recentMeals.length,
+              itemBuilder: (context, index) {
+                final meal = recentMeals[index];
+                final timeFormatted = DateFormat('h:mm a').format(meal.createdAt);
+                
+                return MealItem(
+                  name: meal.name,
+                  time: timeFormatted,
+                  protein: "${meal.protein.toInt()}g",
+                  image: meal.emoji,
+                );
+              },
+            ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "Total Protein: ",
-                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
               ),
               Text(
                 "${totalProtein.toInt()}g",
@@ -222,36 +240,3 @@ class _RecentMealsSection extends StatelessWidget {
   }
 }
 
-class _BottomNavBar extends StatelessWidget {
-  final ThemeData theme;
-  const _BottomNavBar({required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: 0,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey[400],
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      selectedFontSize: 12,
-      unselectedFontSize: 12,
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_rounded),
-          label: 'Dashboard',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.soup_kitchen_rounded),
-          label: 'Meals',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center_rounded),
-          label: 'Workouts',
-        ),
-      ],
-    );
-  }
-}

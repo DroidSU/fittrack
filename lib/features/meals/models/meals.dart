@@ -2,25 +2,36 @@ class Meals {
   final String id;
   final String name;
   final double protein;
+  final String emoji;
+  final DateTime createdAt;
 
-  // Standard constructor
-  Meals({required this.id, required this.name, required this.protein});
+  Meals({
+    required this.id,
+    required this.name,
+    required this.protein,
+    required this.createdAt,
+    this.emoji = '🍽️',
+  });
 
-  // Factory constructor to create a User from JSON (Map)
   factory Meals.fromJson(Map<String, dynamic> json) {
     return Meals(
       id: json['id'],
       name: json['name'],
-      protein: json['protein'],
+      protein: (json['protein'] as num).toDouble(),
+      emoji: json['emoji'] ?? '🍽️',
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
     );
   }
 
-  // Method to convert a User object back to JSON (Map)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
       'protein': protein,
+      'emoji': emoji,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }

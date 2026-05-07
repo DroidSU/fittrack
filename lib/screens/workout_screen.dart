@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WorkoutScreen extends ConsumerStatefulWidget {
@@ -14,11 +13,9 @@ class WorkoutScreen extends ConsumerStatefulWidget {
 class _WorkoutState extends ConsumerState<WorkoutScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-
-        ],
+    return const Scaffold(
+      body: Center(
+        child: Text("Workout Screen"),
       ),
     );
   }
