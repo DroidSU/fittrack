@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../features/meals/widgets/meal_item.dart';
 import '../theme/app_colors.dart';
-import '../widgets/meal_item.dart';
 import '../widgets/protein_card.dart';
 import '../widgets/workout_card.dart';
 

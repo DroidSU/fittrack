@@ -1,4 +1,5 @@
-import 'package:fittrack/screens/add_meal_screen.dart';
+import 'package:fittrack/features/meals/screens/add_meal_screen.dart';
+import 'package:fittrack/features/workouts/screens/add_workout_screen.dart';
 import 'package:fittrack/screens/main_screen.dart';
 import 'package:fittrack/screens/onboarding_screen.dart';
 import 'package:fittrack/theme/app_theme.dart';
@@ -35,6 +36,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/add-meal',
       builder: (context, state) => const AddMealScreen(),
+    ),
+    GoRoute(
+      path: '/add-workout',
+      builder: (context, state) => const AddWorkoutScreen(),
     ),
   ],
 );

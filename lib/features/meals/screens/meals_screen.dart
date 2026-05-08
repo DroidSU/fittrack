@@ -1,12 +1,12 @@
 import 'package:fittrack/features/meals/providers/meal_notifier.dart';
-import 'package:fittrack/widgets/meal_item.dart';
+import 'package:fittrack/features/meals/widgets/meal_item.dart';
 import 'package:fittrack/widgets/protein_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../theme/app_colors.dart';
+import '../../../theme/app_colors.dart';
 
 class MealsScreen extends ConsumerStatefulWidget {
   const MealsScreen({super.key});

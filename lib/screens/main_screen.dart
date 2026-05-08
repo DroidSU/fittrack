@@ -1,6 +1,6 @@
+import 'package:fittrack/features/meals/screens/meals_screen.dart';
+import 'package:fittrack/features/workouts/screens/workout_screen.dart';
 import 'package:fittrack/screens/dashboard_screen.dart';
-import 'package:fittrack/screens/meals_screen.dart';
-import 'package:fittrack/screens/workout_screen.dart';
 import 'package:fittrack/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

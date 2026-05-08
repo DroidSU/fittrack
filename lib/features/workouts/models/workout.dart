@@ -1,24 +1,24 @@
-class Meals {
+class Workout {
   final String id;
   final String name;
-  final double protein;
-  final String emoji;
+  final int durationMinutes;
+  final int caloriesBurned;
   final DateTime createdAt;
 
-  Meals({
+  Workout({
     required this.id,
     required this.name,
-    required this.protein,
+    required this.durationMinutes,
+    required this.caloriesBurned,
     required this.createdAt,
-    this.emoji = '🍽️',
   });
 
-  factory Meals.fromJson(Map<String, dynamic> json) {
-    return Meals(
+  factory Workout.fromJson(Map<String, dynamic> json) {
+    return Workout(
       id: json['id'] as String,
       name: json['name'] as String,
-      protein: (json['protein'] as num).toDouble(),
-      emoji: (json['emoji'] as String?) ?? '🍽️',
+      durationMinutes: json['durationMinutes'] as int,
+      caloriesBurned: json['caloriesBurned'] as int,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : DateTime.now(),
@@ -29,24 +29,24 @@ class Meals {
     return {
       'id': id,
       'name': name,
-      'protein': protein,
-      'emoji': emoji,
+      'durationMinutes': durationMinutes,
+      'caloriesBurned': caloriesBurned,
       'createdAt': createdAt.toIso8601String(),
     };
   }
 
-  Meals copyWith({
+  Workout copyWith({
     String? id,
     String? name,
-    double? protein,
-    String? emoji,
+    int? durationMinutes,
+    int? caloriesBurned,
     DateTime? createdAt,
   }) {
-    return Meals(
+    return Workout(
       id: id ?? this.id,
       name: name ?? this.name,
-      protein: protein ?? this.protein,
-      emoji: emoji ?? this.emoji,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      caloriesBurned: caloriesBurned ?? this.caloriesBurned,
       createdAt: createdAt ?? this.createdAt,
     );
   }
