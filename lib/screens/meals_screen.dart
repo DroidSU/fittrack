@@ -44,7 +44,7 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
       floatingActionButton: _CustomFAB(onPressed: () => context.push("/add-meal")),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -57,7 +57,7 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                     children: [
                       Text(
                         "Meals",
-                        style: theme.textTheme.headlineLarge?.copyWith(
+                        style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.onSurface,
                         ),
@@ -76,7 +76,7 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               // 2. Protein Summary Card
               ProteinCard(
@@ -84,17 +84,17 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                 target: targetProtein,
                 percentage: proteinPercentage,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               // 3. Search & Filter Section
               Row(
                 children: [
                   Expanded(
                     child: Container(
-                      height: 52,
+                      height: 46,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
                       ),
                       child: TextField(
@@ -106,32 +106,32 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: "Search meals...",
-                          hintStyle: TextStyle(color: theme.hintColor.withOpacity(0.3)),
-                          prefixIcon: Icon(Icons.search, color: theme.hintColor.withOpacity(0.3)),
+                          hintStyle: TextStyle(color: theme.hintColor.withOpacity(0.3), fontSize: 14),
+                          prefixIcon: Icon(Icons.search, color: theme.hintColor.withOpacity(0.3), size: 20),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Container(
-                    height: 52,
-                    width: 52,
+                    height: 46,
+                    width: 46,
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
                     ),
-                    child: Icon(Icons.tune, color: theme.hintColor.withOpacity(0.5)),
+                    child: Icon(Icons.tune, color: theme.hintColor.withOpacity(0.5), size: 20),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // 4. Meals List Section
               const _MealSectionHeader(title: "All Logged Meals"),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               
               if (filteredMeals.isEmpty)
                 Center(
@@ -169,10 +169,10 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                   },
                 ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               // 5. Tip Card
               _TipCard(percentage: (proteinPercentage * 100).toInt()),
-              const SizedBox(height: 100), // Spacing for FAB
+              const SizedBox(height: 80), // Spacing for FAB
             ],
           ),
         ),
@@ -194,20 +194,20 @@ class _MealSectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         Row(
           children: [
             Text(
               "Newest",
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
               ),
             ),
             Icon(
               Icons.keyboard_arrow_down,
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-              size: 20,
+              size: 16,
             ),
           ],
         ),
@@ -228,15 +228,15 @@ class _TipCard extends StatelessWidget {
     const Color greenAccent = Color(0xFF34A853);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: greenBg,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          const Icon(Icons.lightbulb_outline, color: greenAccent, size: 24),
-          const SizedBox(width: 12),
+          const Icon(Icons.lightbulb_outline, color: greenAccent, size: 20),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,12 +246,12 @@ class _TipCard extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold, 
                     color: greenAccent,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
                 Text(
                   "Great job! You're $percentage% towards your daily protein goal.",
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: Colors.grey[600],
                   ),
                 ),
@@ -273,28 +273,28 @@ class _CustomFAB extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        height: 80,
-        width: 80,
+        height: 70,
+        width: 70,
         decoration: BoxDecoration(
           color: AppColors.primary,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
               color: AppColors.primary.withOpacity(0.3),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Icon(Icons.add, color: Colors.white, size: 32),
+            Icon(Icons.add, color: Colors.white, size: 28),
             Text(
               "Add Meal",
               style: TextStyle(
                 color: Colors.white, 
-                fontSize: 10, 
+                fontSize: 9,
                 fontWeight: FontWeight.bold,
               ),
             ),

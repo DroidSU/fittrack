@@ -23,17 +23,17 @@ class MealItem extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.01),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -41,16 +41,16 @@ class MealItem extends StatelessWidget {
         children: [
           // 1. Meal Image / Emoji
           Container(
-            height: 56,
-            width: 56,
+            height: 44,
+            width: 44,
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Text(image, style: const TextStyle(fontSize: 28)),
+            child: Text(image, style: const TextStyle(fontSize: 22)),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           
           // 2. Name and Time
           Expanded(
@@ -59,16 +59,16 @@ class MealItem extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Row(
                   children: [
                     Icon(
                       Icons.access_time, 
-                      size: 14, 
+                      size: 12, 
                       color: theme.textTheme.bodySmall?.color?.withOpacity(0.5)
                     ),
                     const SizedBox(width: 4),
@@ -77,6 +77,7 @@ class MealItem extends StatelessWidget {
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
                         fontWeight: FontWeight.w500,
+                        fontSize: 11,
                       ),
                     ),
                   ],
@@ -91,7 +92,7 @@ class MealItem extends StatelessWidget {
             children: [
               Text(
                 protein,
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
@@ -100,17 +101,17 @@ class MealItem extends StatelessWidget {
                 "protein",
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
-                  fontSize: 10,
+                  fontSize: 9,
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           
           // 4. Delete Action
           IconButton(
             onPressed: onDelete,
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),

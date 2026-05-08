@@ -25,22 +25,22 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _HeaderSection(theme: theme),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               ProteinCard(
                 current: totalProtein,
                 target: targetProtein,
                 percentage: proteinPercentage,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               const WorkoutCard(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               _ActionButtonsRow(context: context, theme: theme),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               _RecentMealsSection(theme: theme, totalProtein: totalProtein, mealsList: mealsList),
             ],
           ),
@@ -79,9 +79,9 @@ class _HeaderSection extends StatelessWidget {
           ],
         ),
         const CircleAvatar(
-          radius: 24,
+          radius: 20,
           backgroundColor: AppColors.primaryLight,
-          child: Icon(Icons.person, color: Colors.white, size: 30),
+          child: Icon(Icons.person, color: Colors.white, size: 24),
         ),
       ],
     );
@@ -105,9 +105,9 @@ class _ActionButtonsRow extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
               elevation: 0,
             ),
@@ -122,9 +122,9 @@ class _ActionButtonsRow extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF5C6BC0),
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
               elevation: 0,
             ),
@@ -150,10 +150,10 @@ class _RecentMealsSection extends StatelessWidget {
         : mealsList.reversed.toList();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
       ),
       child: Column(
@@ -163,7 +163,7 @@ class _RecentMealsSection extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.access_time, color: AppColors.primary, size: 20),
+                  const Icon(Icons.access_time, color: AppColors.primary, size: 18),
                   const SizedBox(width: 8),
                   Text(
                     "Recent Meals",
@@ -175,22 +175,27 @@ class _RecentMealsSection extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {},
+                style: TextButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: Row(
                   children: const [
                     Text(
                       "View All",
-                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600, fontSize: 13),
                     ),
-                    Icon(Icons.chevron_right, color: AppColors.primary, size: 16),
+                    Icon(Icons.chevron_right, color: AppColors.primary, size: 14),
                   ],
                 ),
               ),
             ],
           ),
-          const Divider(),
+          const Divider(height: 20),
           if (recentMeals.isEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Text(
                   "No meals logged today",
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -215,7 +220,7 @@ class _RecentMealsSection extends StatelessWidget {
                 );
               },
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -25,16 +25,16 @@ class ProteinCard extends StatelessWidget {
     final Color badgeBg = isDark ? theme.colorScheme.surfaceVariant : Colors.white;
     
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.primary.withOpacity(0.05)),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withOpacity(0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -48,17 +48,17 @@ class ProteinCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.wine_bar, color: Colors.white, size: 14),
+                    child: const Icon(Icons.wine_bar, color: Colors.white, size: 12),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Text(
                     "Today's Protein",
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
@@ -66,15 +66,15 @@ class ProteinCard extends StatelessWidget {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: badgeBg,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.grey.withOpacity(0.1)),
                 ),
                 child: Text(
-                  "Daily Goal: ${target.toInt()}g",
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  "Goal: ${target.toInt()}g",
+                  style: theme.textTheme.labelSmall?.copyWith(
                     color: isDark ? theme.textTheme.bodySmall?.color : Colors.grey[600],
                     fontWeight: FontWeight.w600,
                   ),
@@ -82,7 +82,7 @@ class ProteinCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           
           // 2. Middle Section with Large Text and Icon
           Row(
@@ -97,13 +97,13 @@ class ProteinCard extends StatelessWidget {
                     style: theme.textTheme.displayMedium?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
-                      fontSize: 48, // Restored exact dimension
+                      fontSize: 40, 
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   Text(
                     "/ ${target.toInt()}g",
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       color: Colors.grey[400],
                       fontWeight: FontWeight.w400,
                     ),
@@ -111,8 +111,8 @@ class ProteinCard extends StatelessWidget {
                 ],
               ),
               Container(
-                height: 80, // Restored exact dimension
-                width: 80,  // Restored exact dimension
+                height: 60, 
+                width: 60,  
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.15),
                   shape: BoxShape.circle,
@@ -120,33 +120,34 @@ class ProteinCard extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   WorkoutEmoji.bodybuilding.value, 
-                  style: const TextStyle(fontSize: 40),
+                  style: const TextStyle(fontSize: 30),
                 ),
               ),
             ],
           ),
           
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           
           // 3. Progress Bar
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: percentage,
-              minHeight: 12,
+              minHeight: 8,
               backgroundColor: AppColors.primary.withOpacity(0.1),
               valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           ),
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           
           // 4. Percentage Footer
           Text(
-            "${(percentage * 100).toInt()}% of your daily goal",
+            "${(percentage * 100).toInt()}% of daily goal",
             style: theme.textTheme.bodySmall?.copyWith(
               color: isDark ? theme.textTheme.bodySmall?.color?.withOpacity(0.6) : Colors.grey[600],
               fontWeight: FontWeight.w500,
+              fontSize: 11,
             ),
           ),
         ],
