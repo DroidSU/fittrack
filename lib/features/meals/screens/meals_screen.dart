@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../theme/app_colors.dart';
+import '../../../theme/app_spacing.dart';
+import '../../../widgets/animated_entry.dart';
 
 class MealsScreen extends ConsumerStatefulWidget {
   const MealsScreen({super.key});
@@ -44,7 +46,7 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
       floatingActionButton: _CustomFAB(onPressed: () => context.push("/add-meal")),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -76,7 +78,7 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // 2. Protein Summary Card
               ProteinCard(
@@ -84,7 +86,7 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                 target: targetProtein,
                 percentage: proteinPercentage,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // 3. Search & Filter Section
               Row(
@@ -131,15 +133,17 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
 
               // 4. Meals List Section
               const _MealSectionHeader(title: "All Logged Meals"),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               
               if (filteredMeals.isEmpty)
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40),
-                    child: Text(
-                      _searchQuery.isEmpty ? "No meals logged yet" : "No meals found for '$_searchQuery'",
-                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                    child: AnimatedEntry(
+                      child: Text(
+                        _searchQuery.isEmpty ? "No meals logged yet" : "No meals found for '$_searchQuery'",
+                        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                      ),
                     ),
                   ),
                 )
@@ -153,6 +157,8 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                     final timeFormatted = DateFormat('h:mm a').format(meal.createdAt);
                     
                     return MealItem(
+                      index: index,
+                      id: meal.id,
                       name: meal.name,
                       time: timeFormatted,
                       protein: "${meal.protein.toInt()}g",
@@ -270,35 +276,38 @@ class _CustomFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        height: 70,
-        width: 70,
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.add, color: Colors.white, size: 28),
-            Text(
-              "Add Meal",
-              style: TextStyle(
-                color: Colors.white, 
-                fontSize: 9,
-                fontWeight: FontWeight.bold,
+    return AnimatedEntry(
+      offset: const Offset(0, 0.5),
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Container(
+          height: 70,
+          width: 70,
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.add, color: Colors.white, size: 28),
+              Text(
+                "Add Meal",
+                style: TextStyle(
+                  color: Colors.white, 
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

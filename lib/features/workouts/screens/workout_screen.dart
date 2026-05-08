@@ -1,8 +1,12 @@
+import 'package:fittrack/features/workouts/providers/workout_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../theme/app_colors.dart';
+import '../../../theme/app_spacing.dart';
+import '../../../widgets/animated_entry.dart';
 
 class WorkoutScreen extends ConsumerStatefulWidget {
   const WorkoutScreen({super.key});
@@ -16,13 +20,33 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    
+    final workouts = ref.watch(workoutsProvider);
+    final totalCalories = ref.watch(totalCaloriesProvider);
+    final totalDuration = ref.watch(totalDurationProvider);
+    final workoutsCompleted = ref.watch(workoutsCompletedProvider);
+
+    // Grouping workouts (simplification: Today vs Yesterday)
+    final now = DateTime.now();
+    final todayWorkouts = workouts.where((w) {
+      return w.createdAt.year == now.year && 
+             w.createdAt.month == now.month && 
+             w.createdAt.day == now.day;
+    }).toList().reversed.toList();
+
+    final yesterdayWorkouts = workouts.where((w) {
+      final yesterday = now.subtract(const Duration(days: 1));
+      return w.createdAt.year == yesterday.year && 
+             w.createdAt.month == yesterday.month && 
+             w.createdAt.day == yesterday.day;
+    }).toList().reversed.toList();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       floatingActionButton: _AddWorkoutFAB(),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -61,7 +85,7 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // 2. Summary Section Header
               Row(
@@ -87,7 +111,13 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
               const SizedBox(height: 12),
 
               // 3. Summary Card
-              _SummaryCard(theme: theme, isDark: isDark),
+              _SummaryCard(
+                theme: theme, 
+                isDark: isDark,
+                completed: workoutsCompleted,
+                calories: totalCalories,
+                duration: totalDuration,
+              ),
               const SizedBox(height: 20),
 
               // 4. Workout History Section Header
@@ -117,68 +147,78 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
               ),
               const SizedBox(height: 10),
 
-              // 5. Workout Cards - Today
-              Text(
-                "TODAY",
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
-                  letterSpacing: 1.2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const _WorkoutHistoryItem(
-                title: "Upper Body Strength",
-                time: "09:30 AM",
-                duration: "30 min",
-                calories: "220 kcal",
-                icon: Icons.fitness_center,
-                iconColor: Colors.blue,
-              ),
-              const _WorkoutHistoryItem(
-                title: "HIIT Cardio",
-                time: "12:15 PM",
-                duration: "25 min",
-                calories: "200 kcal",
-                icon: Icons.bolt,
-                iconColor: Colors.orange,
-              ),
-              const _WorkoutHistoryItem(
-                title: "Leg Day",
-                time: "05:45 PM",
-                duration: "40 min",
-                calories: "200 kcal",
-                icon: Icons.downhill_skiing, // Representative of legs
-                iconColor: Colors.purple,
-              ),
+              if (workouts.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 40),
+                    child: AnimatedEntry(
+                      child: Text(
+                        "No workouts logged yet",
+                        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                )
+              else ...[
+                if (todayWorkouts.isNotEmpty) ...[
+                  Text(
+                    "TODAY",
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  ...todayWorkouts.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final workout = entry.value;
+                    return _WorkoutHistoryItem(
+                      index: index,
+                      id: workout.id,
+                      title: workout.name,
+                      time: DateFormat('h:mm a').format(workout.createdAt),
+                      duration: "${workout.durationMinutes} min",
+                      calories: "${workout.caloriesBurned} kcal",
+                      emoji: workout.type.emoji,
+                      onDelete: () {
+                        final originalIndex = workouts.indexOf(workout);
+                        ref.read(workoutsProvider.notifier).removeWorkout(originalIndex);
+                      },
+                    );
+                  }),
+                ],
+                
+                if (yesterdayWorkouts.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    "YESTERDAY",
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  ...yesterdayWorkouts.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final workout = entry.value;
+                    return _WorkoutHistoryItem(
+                      index: index + todayWorkouts.length,
+                      id: workout.id,
+                      title: workout.name,
+                      time: DateFormat('h:mm a').format(workout.createdAt),
+                      duration: "${workout.durationMinutes} min",
+                      calories: "${workout.caloriesBurned} kcal",
+                      emoji: workout.type.emoji,
+                      onDelete: () {
+                        final originalIndex = workouts.indexOf(workout);
+                        ref.read(workoutsProvider.notifier).removeWorkout(originalIndex);
+                      },
+                    );
+                  }),
+                ],
+              ],
 
-              const SizedBox(height: 16),
-              // 5. Workout Cards - Yesterday
-              Text(
-                "YESTERDAY",
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
-                  letterSpacing: 1.2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const _WorkoutHistoryItem(
-                title: "Yoga Flow",
-                time: "07:00 AM",
-                duration: "30 min",
-                calories: "150 kcal",
-                icon: Icons.self_improvement,
-                iconColor: Colors.teal,
-              ),
-              const _WorkoutHistoryItem(
-                title: "Cycling",
-                time: "06:30 PM",
-                duration: "45 min",
-                calories: "180 kcal",
-                icon: Icons.directions_bike,
-                iconColor: Colors.redAccent,
-              ),
-
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               // 6. Motivation Card
               const _MotivationCard(),
               const SizedBox(height: 80), // Space for FAB
@@ -193,13 +233,22 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
 class _SummaryCard extends StatelessWidget {
   final ThemeData theme;
   final bool isDark;
+  final int completed;
+  final int calories;
+  final int duration;
 
-  const _SummaryCard({required this.theme, required this.isDark});
+  const _SummaryCard({
+    required this.theme, 
+    required this.isDark,
+    required this.completed,
+    required this.calories,
+    required this.duration,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
@@ -215,24 +264,24 @@ class _SummaryCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const _SummaryStat(
+            _SummaryStat(
               icon: Icons.fitness_center,
-              value: "3",
+              value: "$completed",
               label: "Workouts\nCompleted",
               color: Colors.blue,
             ),
             VerticalDivider(color: theme.dividerColor.withOpacity(0.1), thickness: 1, width: 16),
-            const _SummaryStat(
+            _SummaryStat(
               icon: Icons.local_fire_department,
-              value: "620",
+              value: "$calories",
               unit: "kcal",
               label: "Calories\nBurned",
               color: Colors.orange,
             ),
             VerticalDivider(color: theme.dividerColor.withOpacity(0.1), thickness: 1, width: 16),
-            const _SummaryStat(
+            _SummaryStat(
               icon: Icons.access_time_filled,
-              value: "95",
+              value: "$duration",
               unit: "min",
               label: "Total\nDuration",
               color: Colors.purple,
@@ -294,7 +343,7 @@ class _SummaryStat extends StatelessWidget {
               ],
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             label,
             textAlign: TextAlign.center,
@@ -311,93 +360,126 @@ class _SummaryStat extends StatelessWidget {
 }
 
 class _WorkoutHistoryItem extends StatelessWidget {
+  final String id;
   final String title;
   final String time;
   final String duration;
   final String calories;
-  final IconData icon;
-  final Color iconColor;
+  final String emoji;
+  final VoidCallback onDelete;
+  final int index;
 
   const _WorkoutHistoryItem({
+    required this.id,
     required this.title,
     required this.time,
     required this.duration,
     required this.calories,
-    required this.icon,
-    required this.iconColor,
+    required this.emoji,
+    required this.onDelete,
+    this.index = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 44,
-            width: 44,
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: iconColor, size: 22),
+    return AnimatedEntry(
+      delay: Duration(milliseconds: index * 50),
+      child: Dismissible(
+        key: ValueKey(id),
+        direction: DismissDirection.endToStart,
+        onDismissed: (_) => onDelete(),
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 20),
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: Colors.redAccent.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+          child: const Icon(Icons.delete_outline, color: Colors.redAccent),
+        ),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                height: 44,
+                width: 44,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(height: 2),
-                Row(
+                alignment: Alignment.center,
+                child: Text(emoji, style: const TextStyle(fontSize: 22)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.calendar_today, size: 9, color: theme.hintColor.withOpacity(0.5)),
-                    const SizedBox(width: 4),
                     Text(
-                      time,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.hintColor.withOpacity(0.5),
-                        fontSize: 10,
-                      ),
+                      title,
+                      style: theme.textTheme.titleSmall
+                          ?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today,
+                            size: 9, color: theme.hintColor.withOpacity(0.5)),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          time,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.hintColor.withOpacity(0.5),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Row(
+                      children: [
+                        _InfoTag(icon: Icons.access_time, label: duration),
+                        const SizedBox(width: 10),
+                        _InfoTag(
+                            icon: Icons.local_fire_department, label: calories),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    _InfoTag(icon: Icons.access_time, label: duration),
-                    const SizedBox(width: 10),
-                    _InfoTag(icon: Icons.local_fire_department, label: calories),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(3),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE8F5E9),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.check, color: Colors.green, size: 10),
               ),
-              const SizedBox(height: 6),
-              Icon(Icons.more_vert, color: theme.hintColor.withOpacity(0.3), size: 18),
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE8F5E9),
+                      shape: BoxShape.circle,
+                    ),
+                    child:
+                        const Icon(Icons.check, color: Colors.green, size: 10),
+                  ),
+                  const SizedBox(height: 6),
+                  IconButton(
+                    onPressed: onDelete,
+                    icon: Icon(Icons.delete_outline,
+                        color: Colors.redAccent.withOpacity(0.6), size: 18),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -415,7 +497,7 @@ class _InfoTag extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 12, color: AppColors.primary.withOpacity(0.7)),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppSpacing.xs),
         Text(
           label,
           style: theme.textTheme.labelSmall?.copyWith(
@@ -435,7 +517,7 @@ class _MotivationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
         color: const Color(0xFFF0F9F6),
         borderRadius: BorderRadius.circular(12),
@@ -443,7 +525,7 @@ class _MotivationCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -482,17 +564,20 @@ class _MotivationCard extends StatelessWidget {
 class _AddWorkoutFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      onPressed: () => context.push('/add-workout'),
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white,
-      elevation: 4,
-      icon: const Icon(Icons.add),
-      label: const Text(
-        "Add Workout",
-        style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+    return AnimatedEntry(
+      offset: const Offset(0, 0.5),
+      child: FloatingActionButton.extended(
+        onPressed: () => context.push('/add-workout'),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        icon: const Icon(Icons.add),
+        label: const Text(
+          "Add Workout",
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }
 }

@@ -1,8 +1,12 @@
+import 'package:fittrack/features/workouts/models/workout.dart';
+import 'package:fittrack/features/workouts/providers/workout_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../theme/app_colors.dart';
+import '../../../theme/app_spacing.dart';
 import '../models/workout_type.dart';
 
 class AddWorkoutScreen extends ConsumerStatefulWidget {
@@ -79,7 +83,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(type.emoji, style: const TextStyle(fontSize: 24)),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppSpacing.sm),
                           Text(
                             type.displayName,
                             textAlign: TextAlign.center,
@@ -120,6 +124,30 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
     );
   }
 
+  void _saveWorkout() {
+    final duration = int.tryParse(_durationController.text) ?? 0;
+    final calories = int.tryParse(_caloriesController.text) ?? 0;
+
+    if (duration <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a valid duration")),
+      );
+      return;
+    }
+
+    final workout = Workout(
+      id: const Uuid().v1(),
+      name: _selectedWorkoutType.displayName,
+      type: _selectedWorkoutType,
+      durationMinutes: duration,
+      caloriesBurned: calories,
+      createdAt: DateTime.now(),
+    );
+
+    ref.read(workoutsProvider.notifier).addWorkout(workout);
+    context.pop();
+  }
+
   @override
   void dispose() {
     _durationController.dispose();
@@ -156,7 +184,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -169,14 +197,14 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 "Track your training and stay consistent.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.hintColor.withOpacity(0.5),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
               // 2. Workout Type Section
               Text(
@@ -215,43 +243,33 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
-              // 3. Duration Section
-              Text(
-                "Duration",
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
+              // 3. Stats Section
+              Row(
+                children: [
+                  Expanded(
+                    child: _StatInputCard(
+                      title: "Duration",
+                      controller: _durationController,
+                      unit: "min",
+                      icon: Icons.access_time_rounded,
+                      iconColor: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _StatInputCard(
+                      title: "Calories",
+                      controller: _caloriesController,
+                      unit: "kcal",
+                      icon: Icons.local_fire_department_rounded,
+                      iconColor: Colors.orange,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              _StatInputCard(
-                title: "Duration",
-                controller: _durationController,
-                unit: "min",
-                icon: Icons.access_time_rounded,
-                iconColor: Colors.blue,
-              ),
-              const SizedBox(height: 24),
-
-              // 4. Calories Section
-              Text(
-                "Calories Burned",
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _StatInputCard(
-                title: "Calories",
-                controller: _caloriesController,
-                unit: "kcal",
-                icon: Icons.local_fire_department_rounded,
-                iconColor: Colors.orange,
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
               // 5. Notes Section
               Text(
@@ -261,7 +279,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
@@ -317,17 +335,14 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xl),
 
               // 7. Save Button
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Logic to save workout would go here
-                    context.pop();
-                  },
+                  onPressed: _saveWorkout,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -351,7 +366,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
   }
 }
 
-class _TypeCard extends StatelessWidget {
+class _TypeCard extends StatefulWidget {
   final String? emoji;
   final IconData? icon;
   final String label;
@@ -365,38 +380,57 @@ class _TypeCard extends StatelessWidget {
   });
 
   @override
+  State<_TypeCard> createState() => _TypeCardState();
+}
+
+class _TypeCardState extends State<_TypeCard> {
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withOpacity(0.08) : theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSelected ? AppColors.primary : theme.dividerColor.withOpacity(0.1),
-          width: 1.5,
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (emoji != null)
-            Text(emoji!, style: const TextStyle(fontSize: 24))
-          else if (icon != null)
-            Icon(icon, color: theme.hintColor.withOpacity(0.4), size: 28),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? AppColors.primary : theme.colorScheme.onSurface.withOpacity(0.8),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+    return AnimatedScale(
+      scale: widget.isSelected ? 1.05 : 1.0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutBack,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: widget.isSelected ? AppColors.primary.withOpacity(0.08) : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: widget.isSelected ? AppColors.primary : theme.dividerColor.withOpacity(0.1),
+            width: widget.isSelected ? 2.0 : 1.5,
           ),
-        ],
+          boxShadow: widget.isSelected ? [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ] : [],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.emoji != null)
+              Text(widget.emoji!, style: const TextStyle(fontSize: 24))
+            else if (widget.icon != null)
+              Icon(widget.icon, color: theme.hintColor.withOpacity(0.4), size: 28),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: widget.isSelected ? AppColors.primary : theme.colorScheme.onSurface.withOpacity(0.8),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -452,7 +486,7 @@ class _StatInputCard extends StatelessWidget {
               Icon(icon, color: iconColor, size: 16),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,

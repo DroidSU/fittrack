@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../theme/app_colors.dart';
+import '../../../theme/app_spacing.dart';
 import '../models/meals.dart';
 import '../providers/meal_notifier.dart';
 
@@ -73,7 +74,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -86,14 +87,14 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 "Track your nutrition to reach your goals.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.hintColor.withOpacity(0.5),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
               // Emoji Selector
               Text(
@@ -137,11 +138,11 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
               // Inputs Section
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
@@ -164,7 +165,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.md),
                     TextField(
                       controller: _nameController,
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -198,7 +199,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xl),
 
               // Tip Card
               Container(

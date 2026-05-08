@@ -14,6 +14,7 @@ void main() async {
 
   await Hive.initFlutter();
   await Hive.openBox("mealsBox");
+  await Hive.openBox("workoutsBox");
 
   runApp(
     const ProviderScope(

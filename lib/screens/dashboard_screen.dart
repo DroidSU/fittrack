@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../features/meals/widgets/meal_item.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 import '../widgets/protein_card.dart';
 import '../widgets/workout_card.dart';
 
@@ -25,7 +26,7 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -38,7 +39,7 @@ class DashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               const WorkoutCard(),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               _ActionButtonsRow(context: context, theme: theme),
               const SizedBox(height: 20),
               _RecentMealsSection(theme: theme, totalProtein: totalProtein, mealsList: mealsList),
@@ -68,7 +69,7 @@ class _HeaderSection extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               "Let's hit your goals today 💪",
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -150,7 +151,7 @@ class _RecentMealsSection extends StatelessWidget {
         : mealsList.reversed.toList();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
@@ -164,7 +165,7 @@ class _RecentMealsSection extends StatelessWidget {
               Row(
                 children: [
                   const Icon(Icons.access_time, color: AppColors.primary, size: 18),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     "Recent Meals",
                     style: theme.textTheme.titleMedium?.copyWith(
@@ -195,7 +196,7 @@ class _RecentMealsSection extends StatelessWidget {
           const Divider(height: 20),
           if (recentMeals.isEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 child: Text(
                   "No meals logged today",
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -213,6 +214,7 @@ class _RecentMealsSection extends StatelessWidget {
                 final timeFormatted = DateFormat('h:mm a').format(meal.createdAt);
                 
                 return MealItem(
+                  id: meal.id,
                   name: meal.name,
                   time: timeFormatted,
                   protein: "${meal.protein.toInt()}g",
@@ -220,7 +222,7 @@ class _RecentMealsSection extends StatelessWidget {
                 );
               },
             ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

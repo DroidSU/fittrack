@@ -13,33 +13,18 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
-  late PageController _pageController;
   int _currentIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(initialPage: _currentIndex);
-  }
+  final List<Widget> _screens = const [
+    DashboardScreen(),
+    MealsScreen(),
+    WorkoutScreen(),
+  ];
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _onPageChanged(int index) {
+  void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
-  }
-
-  void _onItemTapped(int index) {
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
@@ -47,14 +32,20 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
-        children: const [
-          DashboardScreen(),
-          MealsScreen(),
-          WorkoutScreen(),
-        ],
+      body: Stack(
+        children: _screens.asMap().entries.map((entry) {
+          final index = entry.key;
+          final screen = entry.value;
+          return AnimatedOpacity(
+            opacity: _currentIndex == index ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: IgnorePointer(
+              ignoring: _currentIndex != index,
+              child: screen,
+            ),
+          );
+        }).toList(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
