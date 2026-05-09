@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
+import '../../../theme/app_text_styles.dart';
 import '../../../widgets/animated_entry.dart';
 
 class WorkoutScreen extends ConsumerStatefulWidget {
@@ -60,7 +61,7 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
                       Text(
                         "Workouts",
                         style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: AppTextStyles.fontWeightBold,
                           color: theme.colorScheme.onSurface,
                         ),
                       ),
@@ -93,11 +94,14 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
                 children: [
                   Text(
                     "Today's Summary",
-                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: AppTextStyles.fontWeightBold),
                   ),
                   TextButton.icon(
                     onPressed: () {},
-                    icon: const Text("View Weekly Stats", style: TextStyle(fontSize: 12)),
+                    icon: const Text("View Weekly Stats",
+                        style:
+                            TextStyle(fontSize: AppTextStyles.fontSizeXs)),
                     label: const Icon(Icons.chevron_right, size: 14),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
@@ -126,7 +130,8 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
                 children: [
                   Text(
                     "Workout History",
-                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleSmall
+                        ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
                   ),
                   Row(
                     children: [
@@ -330,7 +335,8 @@ class _SummaryStat extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
               ),
               if (unit != null) ...[
                 const SizedBox(width: 2),
@@ -349,7 +355,7 @@ class _SummaryStat extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
-              fontSize: 10,
+              fontSize: AppTextStyles.fontSizeXxs,
               height: 1.2,
             ),
           ),
@@ -417,7 +423,9 @@ class _WorkoutHistoryItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 alignment: Alignment.center,
-                child: Text(emoji, style: const TextStyle(fontSize: 22)),
+                child: Text(emoji,
+                    style:
+                        const TextStyle(fontSize: AppTextStyles.fontSizeXl)),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -426,8 +434,9 @@ class _WorkoutHistoryItem extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: theme.textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: AppTextStyles.fontWeightBold,
+                          fontSize: AppTextStyles.fontSizeXs),
                     ),
                     const SizedBox(height: 2),
                     Row(
@@ -439,7 +448,7 @@ class _WorkoutHistoryItem extends StatelessWidget {
                           time,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.hintColor.withOpacity(0.5),
-                            fontSize: 10,
+                            fontSize: AppTextStyles.fontSizeXxs,
                           ),
                         ),
                       ],
@@ -501,7 +510,7 @@ class _InfoTag extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.w500,
+            fontWeight: AppTextStyles.fontWeightMedium,
             color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
           ),
         ),
@@ -540,16 +549,16 @@ class _MotivationCard extends StatelessWidget {
                 Text(
                   "Keep it up! 💪",
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: AppTextStyles.fontWeightBold,
                     color: const Color(0xFF2E7D32),
-                    fontSize: 14,
+                    fontSize: AppTextStyles.fontSizeSm,
                   ),
                 ),
                 Text(
                   "Consistency is the key to your fitness goals.",
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: const Color(0xFF2E7D32).withOpacity(0.7),
-                    fontSize: 12,
+                    fontSize: AppTextStyles.fontSizeXs,
                   ),
                 ),
               ],
@@ -574,7 +583,9 @@ class _AddWorkoutFAB extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: const Text(
           "Add Workout",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+          style: TextStyle(
+              fontWeight: AppTextStyles.fontWeightBold,
+              letterSpacing: 0.5),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),

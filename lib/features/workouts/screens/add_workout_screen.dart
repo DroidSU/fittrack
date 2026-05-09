@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
+import '../../../theme/app_text_styles.dart';
 import '../models/workout_type.dart';
 
 class AddWorkoutScreen extends ConsumerStatefulWidget {
@@ -46,7 +47,10 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Select Workout Type", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text("Select Workout Type",
+                    style: TextStyle(
+                        fontSize: AppTextStyles.fontSizeLg,
+                        fontWeight: AppTextStyles.fontWeightBold)),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close, size: 20),
@@ -82,15 +86,19 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(type.emoji, style: const TextStyle(fontSize: 24)),
+                          Text(type.emoji,
+                              style: const TextStyle(
+                                  fontSize: AppTextStyles.fontSizeXxl)),
                           const SizedBox(height: AppSpacing.sm),
                           Text(
                             type.displayName,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: isSelected ? AppColors.primary : theme.colorScheme.onSurface,
+                              fontSize: AppTextStyles.fontSizeXxs,
+                              fontWeight: AppTextStyles.fontWeightBold,
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : theme.colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -114,7 +122,9 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text("Confirm", style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text("Confirm",
+                      style: TextStyle(
+                          fontWeight: AppTextStyles.fontWeightBold)),
                 ),
               ),
             ],
@@ -176,9 +186,8 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
         ),
         title: Text(
           "Add Workout",
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
         ),
         centerTitle: true,
       ),
@@ -192,8 +201,8 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
               Text(
                 "Log Your Workout 💪",
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 26,
+                  fontWeight: AppTextStyles.fontWeightBold,
+                  fontSize: AppTextStyles.fontSizeXxl,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
@@ -210,7 +219,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
               Text(
                 "Workout Type",
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: AppTextStyles.fontWeightBold,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -275,7 +284,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
               Text(
                 "Notes (Optional)",
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: AppTextStyles.fontWeightBold,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -291,12 +300,12 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                 child: TextField(
                   controller: _notesController,
                   maxLines: 3,
-                  style: const TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: AppTextStyles.fontSizeSm),
                   decoration: InputDecoration(
                     hintText: "How did today's workout feel?",
                     hintStyle: TextStyle(
                       color: theme.hintColor.withOpacity(0.3),
-                      fontSize: 13,
+                      fontSize: AppTextStyles.fontSizeXs,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.all(12),
@@ -327,8 +336,8 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                           color: isDark
                               ? AppColors.primaryLight
                               : AppColors.primary,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
+                          fontWeight: AppTextStyles.fontWeightMedium,
+                          fontSize: AppTextStyles.fontSizeXs,
                         ),
                       ),
                     ),
@@ -353,7 +362,9 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                   ),
                   child: const Text(
                     "Save Workout",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: AppTextStyles.fontSizeSm,
+                        fontWeight: AppTextStyles.fontWeightBold),
                   ),
                 ),
               ),
@@ -415,16 +426,19 @@ class _TypeCardState extends State<_TypeCard> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (widget.emoji != null)
-              Text(widget.emoji!, style: const TextStyle(fontSize: 24))
+              Text(widget.emoji!,
+                  style: const TextStyle(fontSize: AppTextStyles.fontSizeXxl))
             else if (widget.icon != null)
               Icon(widget.icon, color: theme.hintColor.withOpacity(0.4), size: 28),
             const SizedBox(height: AppSpacing.sm),
             Text(
               widget.label,
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: widget.isSelected ? AppColors.primary : theme.colorScheme.onSurface.withOpacity(0.8),
+                fontSize: AppTextStyles.fontSizeXxs,
+                fontWeight: AppTextStyles.fontWeightBold,
+                color: widget.isSelected
+                    ? AppColors.primary
+                    : theme.colorScheme.onSurface.withOpacity(0.8),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -480,7 +494,7 @@ class _StatInputCard extends StatelessWidget {
                 title,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.hintColor.withOpacity(0.6),
-                  fontWeight: FontWeight.bold,
+                  fontWeight: AppTextStyles.fontWeightBold,
                 ),
               ),
               Icon(icon, color: iconColor, size: 16),
@@ -496,7 +510,7 @@ class _StatInputCard extends StatelessWidget {
                   controller: controller,
                   keyboardType: TextInputType.number,
                   style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: AppTextStyles.fontWeightBold,
                     color: theme.colorScheme.onSurface,
                   ),
                   decoration: const InputDecoration(
@@ -511,8 +525,8 @@ class _StatInputCard extends StatelessWidget {
                 unit,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.hintColor.withOpacity(0.4),
-                  fontWeight: FontWeight.w500,
-                  fontSize: 10,
+                  fontWeight: AppTextStyles.fontWeightMedium,
+                  fontSize: AppTextStyles.fontSizeXxs,
                 ),
               ),
             ],

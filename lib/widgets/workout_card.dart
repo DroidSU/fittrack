@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/app_spacing.dart';
+import '../theme/app_text_styles.dart';
 
 class WorkoutCard extends StatefulWidget {
   const WorkoutCard({super.key});
@@ -60,7 +61,7 @@ class _WorkoutCardState extends State<WorkoutCard> {
                           "Workout",
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: greenAccent,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: AppTextStyles.fontWeightSemiBold,
                           ),
                         ),
                       ],
@@ -69,7 +70,7 @@ class _WorkoutCardState extends State<WorkoutCard> {
                     Text(
                       "Not logged yet",
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: AppTextStyles.fontWeightBold,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -78,7 +79,7 @@ class _WorkoutCardState extends State<WorkoutCard> {
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
                         height: 1.3,
-                        fontSize: 11,
+                        fontSize: AppTextStyles.fontSizeXxs,
                       ),
                     ),
                   ],

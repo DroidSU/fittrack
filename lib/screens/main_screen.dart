@@ -2,6 +2,7 @@ import 'package:fittrack/features/meals/screens/meals_screen.dart';
 import 'package:fittrack/features/workouts/screens/workout_screen.dart';
 import 'package:fittrack/screens/dashboard_screen.dart';
 import 'package:fittrack/theme/app_colors.dart';
+import 'package:fittrack/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -54,8 +55,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         unselectedItemColor: theme.unselectedWidgetColor.withOpacity(0.4),
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
+        selectedFontSize: AppTextStyles.fontSizeXs,
+        unselectedFontSize: AppTextStyles.fontSizeXs,
         type: BottomNavigationBarType.fixed,
         backgroundColor: theme.colorScheme.surface,
         items: const [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/app_spacing.dart';
+import '../theme/app_text_styles.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -28,7 +29,7 @@ class OnboardingScreen extends StatelessWidget {
                   Text(
                     "Welcome to FitTrack",
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: AppTextStyles.fontWeightBold,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -37,7 +38,7 @@ class OnboardingScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: theme.textTheme.bodyLarge?.color?.withOpacity(0.6),
-                      fontWeight: FontWeight.normal,
+                      fontWeight: AppTextStyles.fontWeightNormal,
                     ),
                   ),
                 ],
@@ -56,7 +57,9 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   child: const Text(
                     "Get Started",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: AppTextStyles.fontSizeLg,
+                        fontWeight: AppTextStyles.fontWeightBold),
                   ),
                 ),
               ),

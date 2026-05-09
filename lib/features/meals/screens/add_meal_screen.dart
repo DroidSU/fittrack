@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
+import '../../../theme/app_text_styles.dart';
 import '../models/meals.dart';
 import '../providers/meal_notifier.dart';
 
@@ -68,7 +69,8 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
         ),
         title: Text(
           "Add Meal",
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
         ),
         centerTitle: true,
       ),
@@ -82,8 +84,8 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               Text(
                 "Log Your Meal 🍽️",
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 26,
+                  fontWeight: AppTextStyles.fontWeightBold,
+                  fontSize: AppTextStyles.fontSizeXxl,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
@@ -100,7 +102,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               Text(
                 "Choose Emoji",
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: AppTextStyles.fontWeightBold,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -132,7 +134,9 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                             )
                           ] : null,
                         ),
-                        child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                        child: Text(emoji,
+                            style: const TextStyle(
+                                fontSize: AppTextStyles.fontSizeXl)),
                       ),
                     );
                   }).toList(),
@@ -162,17 +166,20 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                       "Meal Details",
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.hintColor.withOpacity(0.6),
-                        fontWeight: FontWeight.bold,
+                        fontWeight: AppTextStyles.fontWeightBold,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     TextField(
                       controller: _nameController,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
                       decoration: InputDecoration(
                         labelText: "Meal Name",
                         hintText: "e.g. Chicken & Rice",
-                        labelStyle: TextStyle(color: theme.hintColor.withOpacity(0.5), fontSize: 13),
+                        labelStyle: TextStyle(
+                            color: theme.hintColor.withOpacity(0.5),
+                            fontSize: AppTextStyles.fontSizeXs),
                         border: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
@@ -183,17 +190,22 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                     TextField(
                       controller: _proteinController,
                       keyboardType: TextInputType.number,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
                       decoration: InputDecoration(
                         labelText: "Protein (grams)",
                         hintText: "e.g. 30",
-                        labelStyle: TextStyle(color: theme.hintColor.withOpacity(0.5), fontSize: 13),
+                        labelStyle: TextStyle(
+                            color: theme.hintColor.withOpacity(0.5),
+                            fontSize: AppTextStyles.fontSizeXs),
                         border: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         suffixText: "g",
-                        suffixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                        suffixStyle: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: AppTextStyles.fontWeightBold),
                       ),
                     ),
                   ],
@@ -217,8 +229,8 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                         "Try to include high-protein foods like eggs, chicken, or lentils.",
                         style: TextStyle(
                           color: isDark ? AppColors.primaryLight : AppColors.primary,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
+                          fontWeight: AppTextStyles.fontWeightMedium,
+                          fontSize: AppTextStyles.fontSizeXs,
                         ),
                       ),
                     ),
@@ -244,8 +256,8 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                   child: const Text(
                     "Save Meal",
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                      fontSize: AppTextStyles.fontSizeSm,
+                      fontWeight: AppTextStyles.fontWeightBold,
                     ),
                   ),
                 ),

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
+import '../../../theme/app_text_styles.dart';
 import '../../../widgets/animated_entry.dart';
 
 class MealsScreen extends ConsumerStatefulWidget {
@@ -60,7 +61,7 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                       Text(
                         "Meals",
                         style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: AppTextStyles.fontWeightBold,
                           color: theme.colorScheme.onSurface,
                         ),
                       ),
@@ -108,10 +109,15 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: "Search meals...",
-                          hintStyle: TextStyle(color: theme.hintColor.withOpacity(0.3), fontSize: 14),
-                          prefixIcon: Icon(Icons.search, color: theme.hintColor.withOpacity(0.3), size: 20),
+                          hintStyle: TextStyle(
+                              color: theme.hintColor.withOpacity(0.3),
+                              fontSize: AppTextStyles.fontSizeSm),
+                          prefixIcon: Icon(Icons.search,
+                              color: theme.hintColor.withOpacity(0.3),
+                              size: 20),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 10),
                         ),
                       ),
                     ),
@@ -200,7 +206,8 @@ class _MealSectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
         ),
         Row(
           children: [
@@ -250,9 +257,9 @@ class _TipCard extends StatelessWidget {
                 const Text(
                   "Tip",
                   style: TextStyle(
-                    fontWeight: FontWeight.bold, 
+                    fontWeight: AppTextStyles.fontWeightBold,
                     color: greenAccent,
-                    fontSize: 14,
+                    fontSize: AppTextStyles.fontSizeSm,
                   ),
                 ),
                 Text(
@@ -301,9 +308,9 @@ class _CustomFAB extends StatelessWidget {
               Text(
                 "Add Meal",
                 style: TextStyle(
-                  color: Colors.white, 
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: AppTextStyles.fontSizeXxs,
+                  fontWeight: AppTextStyles.fontWeightBold,
                 ),
               ),
             ],

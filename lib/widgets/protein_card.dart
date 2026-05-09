@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_text_styles.dart';
 
 class ProteinCard extends StatefulWidget {
   final double current;
@@ -76,7 +77,7 @@ class _ProteinCardState extends State<ProteinCard> {
                         "Today's Protein",
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: AppTextStyles.fontWeightBold,
                         ),
                       ),
                     ],
@@ -92,7 +93,7 @@ class _ProteinCardState extends State<ProteinCard> {
                       "Goal: ${widget.target.toInt()}g",
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: isDark ? theme.textTheme.bodySmall?.color : Colors.grey[600],
-                        fontWeight: FontWeight.w600,
+                        fontWeight: AppTextStyles.fontWeightSemiBold,
                       ),
                     ),
                   ),
@@ -125,8 +126,8 @@ class _ProteinCardState extends State<ProteinCard> {
                           key: ValueKey<int>(widget.current.toInt()),
                           style: theme.textTheme.displayMedium?.copyWith(
                             color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 40, 
+                            fontWeight: AppTextStyles.fontWeightBold,
+                            fontSize: AppTextStyles.fontSizeDisplay,
                           ),
                         ),
                       ),
@@ -135,7 +136,7 @@ class _ProteinCardState extends State<ProteinCard> {
                         "/ ${widget.target.toInt()}g",
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: Colors.grey[400],
-                          fontWeight: FontWeight.w400,
+                          fontWeight: AppTextStyles.fontWeightNormal,
                         ),
                       ),
                     ],
@@ -150,7 +151,7 @@ class _ProteinCardState extends State<ProteinCard> {
                     alignment: Alignment.center,
                     child: Text(
                       WorkoutEmoji.bodybuilding.value, 
-                      style: const TextStyle(fontSize: 30),
+                      style: const TextStyle(fontSize: AppTextStyles.fontSizeXxxl),
                     ),
                   ),
                 ],
@@ -188,8 +189,8 @@ class _ProteinCardState extends State<ProteinCard> {
                     "${(value * 100).toInt()}% of daily goal",
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDark ? theme.textTheme.bodySmall?.color?.withOpacity(0.6) : Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                      fontSize: 11,
+                      fontWeight: AppTextStyles.fontWeightMedium,
+                      fontSize: AppTextStyles.fontSizeXxs,
                     ),
                   );
                 },

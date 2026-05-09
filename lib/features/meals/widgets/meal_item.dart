@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
+import '../../../theme/app_text_styles.dart';
 import '../../../widgets/animated_entry.dart';
 
 class MealItem extends StatelessWidget {
@@ -70,7 +71,9 @@ class MealItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 alignment: Alignment.center,
-                child: Text(image, style: const TextStyle(fontSize: 22)),
+                child: Text(image,
+                    style:
+                        const TextStyle(fontSize: AppTextStyles.fontSizeXl)),
               ),
               const SizedBox(width: 12),
 
@@ -82,7 +85,7 @@ class MealItem extends StatelessWidget {
                     Text(
                       name,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: AppTextStyles.fontWeightBold,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -98,8 +101,8 @@ class MealItem extends StatelessWidget {
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.textTheme.bodySmall?.color
                                 ?.withOpacity(0.5),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 11,
+                            fontWeight: AppTextStyles.fontWeightMedium,
+                            fontSize: AppTextStyles.fontSizeXxs,
                           ),
                         ),
                       ],
@@ -115,7 +118,7 @@ class MealItem extends StatelessWidget {
                   Text(
                     protein,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: AppTextStyles.fontWeightBold,
                       color: AppColors.primary,
                     ),
                   ),
@@ -123,7 +126,7 @@ class MealItem extends StatelessWidget {
                     "protein",
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
-                      fontSize: 9,
+                      fontSize: AppTextStyles.fontSizeXxs,
                     ),
                   ),
                 ],
