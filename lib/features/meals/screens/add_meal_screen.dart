@@ -30,7 +30,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
     super.dispose();
   }
 
-  void _saveMeal() {
+  Future<void> _saveMeal() async {
     final name = _nameController.text.trim();
     final protein = double.tryParse(_proteinController.text) ?? 0;
 
@@ -49,14 +49,23 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
       createdAt: DateTime.now(),
     );
 
-    ref.read(mealProvider.notifier).addMeal(meal);
-    context.pop();
+    try {
+      await ref.read(mealProvider.notifier).addMeal(meal);
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error saving meal: $e")),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final mealsState = ref.watch(mealProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -244,7 +253,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: _saveMeal,
+                  onPressed: mealsState.isLoading ? null : _saveMeal,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -253,13 +262,22 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    "Save Meal",
-                    style: TextStyle(
-                      fontSize: AppTextStyles.fontSizeSm,
-                      fontWeight: AppTextStyles.fontWeightBold,
-                    ),
-                  ),
+                  child: mealsState.isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Save Meal",
+                          style: TextStyle(
+                            fontSize: AppTextStyles.fontSizeSm,
+                            fontWeight: AppTextStyles.fontWeightBold,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 20),

@@ -6,7 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../features/analytics/providers/dashboard_analytics_provider.dart';
+import '../features/auth/providers/auth_provider.dart';
 import '../features/meals/providers/meal_notifier.dart';
+import '../features/profile/providers/profile_provider.dart';
 import '../features/workouts/providers/workout_notifier.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
@@ -20,6 +22,9 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final mealsAsync = ref.watch(mealProvider);
+    final workoutsAsync = ref.watch(workoutsProvider);
+    
     final totalProtein = ref.watch(totalProteinProvider);
     const targetProtein = 150.0;
     final proteinPercentage = (totalProtein / targetProtein).clamp(0.0, 1.0);
@@ -27,90 +32,135 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md, vertical: AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _DashboardHeader(),
-              const SizedBox(height: AppSpacing.lg),
-              _ProteinGoalCard(
-                current: totalProtein,
-                target: targetProtein,
-                percentage: proteinPercentage,
-              ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
-              const SizedBox(height: AppSpacing.lg),
-              const _WeeklyIntakeChart().animate().fadeIn(delay: 100.ms),
-              const SizedBox(height: AppSpacing.lg),
-              const _StreakAndGoalSection().animate().fadeIn(delay: 200.ms),
-              const SizedBox(height: AppSpacing.lg),
-              const _InsightsSection().animate().fadeIn(delay: 300.ms),
-              const SizedBox(height: AppSpacing.lg),
-              const _RecentActivityTimeline().animate().fadeIn(delay: 400.ms),
-              const SizedBox(height: 100), // FAB spacing
-            ],
+        child: mealsAsync.when(
+          data: (_) => workoutsAsync.when(
+            data: (_) => SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.md,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _DashboardHeader(),
+                  const SizedBox(height: AppSpacing.lg),
+                  _ProteinGoalHeroCard(
+                    current: totalProtein,
+                    target: targetProtein,
+                    percentage: proteinPercentage,
+                  ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05),
+                  const SizedBox(height: AppSpacing.lg),
+                  const _WeeklyProteinMiniChart().animate().fadeIn(delay: 100.ms),
+                  const SizedBox(height: AppSpacing.lg),
+                  const _CompactStreakAndGoalCard().animate().fadeIn(delay: 200.ms),
+                  const SizedBox(height: AppSpacing.xl),
+                  const _RecentActivitySection().animate().fadeIn(delay: 300.ms),
+                  const SizedBox(height: 120), // Padding for FAB
+                ],
+              ),
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, s) => Center(child: Text('Error: $e')),
           ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, s) => Center(child: Text('Error: $e')),
         ),
       ),
-      floatingActionButton: _PremiumFAB(
+      floatingActionButton: _MinimalFAB(
         onPressed: () => context.push("/add-meal"),
-      ).animate().scale(delay: 500.ms, curve: Curves.easeOutBack),
+      ).animate().scale(delay: 400.ms, curve: Curves.easeOutBack),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
 
-class _DashboardHeader extends StatelessWidget {
+class _DashboardHeader extends ConsumerWidget {
   const _DashboardHeader();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final profileAsync = ref.watch(profileNotifierProvider);
+    final userName = profileAsync.value?.name ?? "User";
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Good Morning, Sujoy",
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+              "Welcome Back,",
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.hintColor.withOpacity(0.5),
                 fontWeight: AppTextStyles.fontWeightMedium,
+                letterSpacing: 0.5,
               ),
             ),
             Text(
-              "Dashboard",
-              style: theme.textTheme.headlineMedium?.copyWith(
+              userName,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: AppTextStyles.fontWeightBold,
                 color: theme.colorScheme.onSurface,
+                letterSpacing: -0.5,
               ),
             ),
           ],
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: theme.dividerColor.withValues(alpha: 0.05)),
-          ),
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.insights_rounded, color: AppColors.primary),
-          ),
+        Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(color: theme.dividerColor.withOpacity(0.08)),
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => ref.read(authNotifierProvider.notifier).logout(),
+                icon: const Icon(
+                  Icons.logout_rounded,
+                  color: AppColors.error,
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(color: theme.dividerColor.withOpacity(0.08)),
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.notifications_none_rounded,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
   }
 }
 
-class _ProteinGoalCard extends StatelessWidget {
+class _ProteinGoalHeroCard extends StatelessWidget {
   final double current;
   final double target;
   final double percentage;
 
-  const _ProteinGoalCard({
+  const _ProteinGoalHeroCard({
     required this.current,
     required this.target,
     required this.percentage,
@@ -128,85 +178,97 @@ class _ProteinGoalCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
-            blurRadius: 20,
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 30,
             offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          Stack(
-            alignment: Alignment.center,
+          Row(
             children: [
-              SizedBox(
-                height: 90,
-                width: 90,
-                child: CircularProgressIndicator(
-                  value: percentage,
-                  strokeWidth: 10,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  strokeCap: StrokeCap.round,
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  Text(
-                    "${current.toInt()}",
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: AppTextStyles.fontWeightBold,
+                  SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: CircularProgressIndicator(
+                      value: percentage,
+                      strokeWidth: 8,
+                      backgroundColor: AppColors.primary.withOpacity(0.08),
+                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      strokeCap: StrokeCap.round,
                     ),
                   ),
                   Text(
-                    "/${target.toInt()}g",
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.hintColor.withValues(alpha: 0.5),
+                    "${(percentage * 100).toInt()}%",
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: AppTextStyles.fontWeightBold,
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
               ),
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Daily Protein",
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: AppTextStyles.fontWeightBold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "${current.toInt()}g",
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: AppTextStyles.fontWeightBold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          TextSpan(
+                            text: " / ${target.toInt()}g goal",
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.hintColor.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          const SizedBox(width: AppSpacing.lg),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Protein Goal",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: AppTextStyles.fontWeightBold,
-                  ),
+          const SizedBox(height: AppSpacing.lg),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "${(target - current).clamp(0, target).toInt()}g remaining",
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.hintColor.withOpacity(0.6),
+                  fontWeight: AppTextStyles.fontWeightMedium,
                 ),
-                Text(
-                  "${(percentage * 100).toInt()}% completed",
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: AppTextStyles.fontWeightSemiBold,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  "${(target - current).clamp(0, target).toInt()}g remaining",
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.hintColor.withValues(alpha: 0.6),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadius.xs),
-                  child: LinearProgressIndicator(
-                    value: percentage,
-                    minHeight: 6,
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  ),
-                ),
-              ],
+              ),
+              const Icon(Icons.bolt_rounded, size: 14, color: Colors.orange),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            child: LinearProgressIndicator(
+              value: percentage,
+              minHeight: 6,
+              backgroundColor: AppColors.primary.withOpacity(0.08),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           ),
         ],
@@ -215,61 +277,38 @@ class _ProteinGoalCard extends StatelessWidget {
   }
 }
 
-class _WeeklyIntakeChart extends ConsumerWidget {
-  const _WeeklyIntakeChart();
+class _WeeklyProteinMiniChart extends ConsumerWidget {
+  const _WeeklyProteinMiniChart();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final weeklyData = ref.watch(weeklyProteinIntakeProvider);
-    final avgProtein = ref.watch(averageProteinProvider);
-    final days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    final days = ["M", "T", "W", "T", "F", "S", "S"];
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.05)),
+        color: theme.colorScheme.surface.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Weekly Protein Intake",
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: AppTextStyles.fontWeightBold,
-                    ),
-                  ),
-                  Text(
-                    "Daily average: ${avgProtein.toInt()}g",
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.hintColor.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Text(
+              "Weekly Trend",
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: AppTextStyles.fontWeightBold,
+                color: theme.hintColor.withOpacity(0.7),
               ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  "View Details",
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: AppTextStyles.fontWeightBold,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.md),
           SizedBox(
-            height: 180,
+            height: 100,
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
@@ -283,33 +322,24 @@ class _WeeklyIntakeChart extends ConsumerWidget {
                       getTitlesWidget: (value, meta) {
                         if (value < 0 || value >= days.length) return const SizedBox.shrink();
                         return Padding(
-                          padding: const EdgeInsets.only(top: 8),
+                          padding: const EdgeInsets.only(top: 6),
                           child: Text(
                             days[value.toInt()],
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.hintColor.withValues(alpha: 0.5),
-                              fontSize: 10,
+                              color: theme.hintColor.withOpacity(0.4),
+                              fontSize: 9,
+                              fontWeight: AppTextStyles.fontWeightBold,
                             ),
                           ),
                         );
                       },
                     ),
                   ),
-                  leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (value) => FlLine(
-                    color: theme.dividerColor.withValues(alpha: 0.05),
-                    strokeWidth: 1,
-                  ),
-                ),
+                gridData: const FlGridData(show: false),
                 borderData: FlBorderData(show: false),
                 barGroups: weeklyData.asMap().entries.map((entry) {
                   return BarChartGroupData(
@@ -317,13 +347,13 @@ class _WeeklyIntakeChart extends ConsumerWidget {
                     barRods: [
                       BarChartRodData(
                         toY: entry.value,
-                        color: AppColors.primary,
-                        width: 12,
+                        color: AppColors.primary.withOpacity(0.8),
+                        width: 8,
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                         backDrawRodData: BackgroundBarChartRodData(
                           show: true,
                           toY: 200,
-                          color: AppColors.primary.withValues(alpha: 0.05),
+                          color: AppColors.primary.withOpacity(0.03),
                         ),
                       ),
                     ],
@@ -338,8 +368,8 @@ class _WeeklyIntakeChart extends ConsumerWidget {
   }
 }
 
-class _StreakAndGoalSection extends ConsumerWidget {
-  const _StreakAndGoalSection();
+class _CompactStreakAndGoalCard extends ConsumerWidget {
+  const _CompactStreakAndGoalCard();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -347,321 +377,169 @@ class _StreakAndGoalSection extends ConsumerWidget {
     final streak = ref.watch(dashboardStreakProvider);
     final weeklyGoalProgress = ref.watch(weeklyGoalProgressProvider);
 
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+      ),
+      child: Row(
+        children: [
+          _buildItem(
+            context,
+            icon: Icons.local_fire_department_rounded,
+            color: Colors.orange,
+            label: "Streak",
+            value: "$streak Days",
+          ),
+          Container(
+            height: 30,
+            width: 1,
+            color: theme.dividerColor.withOpacity(0.1),
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          ),
+          _buildItem(
+            context,
+            icon: Icons.ads_click_rounded,
+            color: AppColors.primary,
+            label: "Weekly Goal",
+            value: "${(weeklyGoalProgress * 7).toInt()}/7 Days",
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItem(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String label,
+    required String value,
+  }) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.orange.withValues(alpha: 0.1),
-                  Colors.orange.withValues(alpha: 0.05)
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+              color: color.withOpacity(0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.hintColor.withOpacity(0.5),
+                ),
               ),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: Colors.orange.withValues(alpha: 0.1)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Icon(Icons.local_fire_department_rounded,
-                        color: Colors.orange, size: 24),
-                    Text(
-                      "$streak",
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: AppTextStyles.fontWeightBold,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ],
+              Text(
+                value,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: AppTextStyles.fontWeightBold,
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  "Day Streak",
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: AppTextStyles.fontWeightBold,
-                  ),
-                ),
-                Text(
-                  "Keep it going!",
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.hintColor.withValues(alpha: 0.6),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            value: weeklyGoalProgress,
-                            strokeWidth: 3,
-                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                                AppColors.primary),
-                          ),
-                        ),
-                        const Icon(Icons.check,
-                            size: 12, color: AppColors.primary),
-                      ],
-                    ),
-                    Text(
-                      "${(weeklyGoalProgress * 7).toInt()}/7",
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: AppTextStyles.fontWeightBold,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  "Weekly Goal",
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: AppTextStyles.fontWeightBold,
-                  ),
-                ),
-                Text(
-                  "Almost there",
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.hintColor.withValues(alpha: 0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class _InsightsSection extends ConsumerWidget {
-  const _InsightsSection();
+class _RecentActivitySection extends ConsumerWidget {
+  const _RecentActivitySection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final insights = ref.watch(dashboardInsightsProvider);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Personal Insights",
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: AppTextStyles.fontWeightBold,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: insights.map((insight) {
-              return Container(
-                width: 160,
-                margin: const EdgeInsets.only(right: AppSpacing.md),
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  border:
-                      Border.all(color: theme.dividerColor.withValues(alpha: 0.05)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(insight.emoji, style: const TextStyle(fontSize: 24)),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      insight.title,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.hintColor.withValues(alpha: 0.5),
-                        fontWeight: AppTextStyles.fontWeightMedium,
-                      ),
-                    ),
-                    Text(
-                      insight.value,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: AppTextStyles.fontWeightBold,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      insight.subtitle,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.primary,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RecentActivityTimeline extends ConsumerWidget {
-  const _RecentActivityTimeline();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final meals = ref.watch(mealProvider);
-    final workouts = ref.watch(workoutsProvider);
+    final mealsAsync = ref.watch(mealProvider);
+    final workoutsAsync = ref.watch(workoutsProvider);
+    
+    final meals = mealsAsync.value ?? [];
+    final workouts = workoutsAsync.value ?? [];
 
     final activities = [
-      ...meals.map((m) => _ActivityItem(
-          title: "Added ${m.name}",
-          subtitle: "${m.protein.toInt()}g protein",
-          time: m.createdAt,
-          icon: Icons.restaurant_rounded,
-          color: Colors.green)),
-      ...workouts.map((w) => _ActivityItem(
-          title: w.name,
-          subtitle: "${w.durationMinutes} min • ${w.caloriesBurned} kcal",
-          time: w.createdAt,
-          icon: Icons.fitness_center_rounded,
-          color: Colors.blue)),
+      ...meals.map((m) => _ActivityData(
+            title: m.name,
+            subtitle: "${m.protein.toInt()}g protein",
+            time: m.createdAt,
+            icon: Icons.restaurant_rounded,
+            color: Colors.green,
+          )),
+      ...workouts.map((w) => _ActivityData(
+            title: w.name,
+            subtitle: "${w.durationMinutes}m • ${w.caloriesBurned}kcal",
+            time: w.createdAt,
+            icon: Icons.fitness_center_rounded,
+            color: Colors.blue,
+          )),
     ]..sort((a, b) => b.time.compareTo(a.time));
 
-    final latestActivities = activities.take(5).toList();
+    final displayActivities = activities.take(3).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Recent Activity",
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: AppTextStyles.fontWeightBold,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Recent Activity",
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: AppTextStyles.fontWeightBold,
+                letterSpacing: -0.2,
+              ),
+            ),
+            TextButton(
+              onPressed: () {},
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+              ),
+              child: Text(
+                "See all",
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: AppTextStyles.fontWeightBold,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: AppSpacing.md),
-        if (latestActivities.isEmpty)
+        const SizedBox(height: AppSpacing.sm),
+        if (displayActivities.isEmpty)
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Text(
-                "No recent activity",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.hintColor.withValues(alpha: 0.5),
-                ),
+                "No activities yet",
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
               ),
             ),
           )
         else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: latestActivities.length,
-            itemBuilder: (context, index) {
-              final activity = latestActivities[index];
-              return IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: activity.color.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: activity.color, width: 2),
-                          ),
-                        ),
-                        if (index != latestActivities.length - 1)
-                          Expanded(
-                            child: Container(
-                              width: 2,
-                              color: theme.dividerColor.withValues(alpha: 0.1),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  activity.title,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: AppTextStyles.fontWeightSemiBold,
-                                  ),
-                                ),
-                                Text(
-                                  DateFormat('h:mm a').format(activity.time),
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: theme.hintColor.withValues(alpha: 0.5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              activity.subtitle,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.hintColor.withValues(alpha: 0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          ...displayActivities.map((activity) => _ActivityTile(activity: activity)),
       ],
     );
   }
 }
 
-class _ActivityItem {
+class _ActivityData {
   final String title;
   final String subtitle;
   final DateTime time;
   final IconData icon;
   final Color color;
 
-  _ActivityItem({
+  _ActivityData({
     required this.title,
     required this.subtitle,
     required this.time,
@@ -670,38 +548,86 @@ class _ActivityItem {
   });
 }
 
-class _PremiumFAB extends StatelessWidget {
-  final VoidCallback onPressed;
+class _ActivityTile extends StatelessWidget {
+  final _ActivityData activity;
 
-  const _PremiumFAB({required this.onPressed});
+  const _ActivityTile({required this.activity});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedEntry(
-      offset: const Offset(0, 0.5),
-      child: Material(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
-        elevation: 8,
-        shadowColor: AppColors.primary.withValues(alpha: 0.3),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(AppRadius.xxl),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Row(
+        children: [
+          Container(
+            height: 44,
+            width: 44,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+            ),
+            child: Icon(activity.icon, color: activity.color, size: 20),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.add_rounded, color: Colors.white),
-                const SizedBox(width: AppSpacing.sm),
                 Text(
-                  "Log Activity",
-                  style: AppTextStyles.label.copyWith(
-                    color: Colors.white,
-                    fontWeight: AppTextStyles.fontWeightBold,
+                  activity.title,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: AppTextStyles.fontWeightSemiBold,
+                  ),
+                ),
+                Text(
+                  activity.subtitle,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.hintColor.withOpacity(0.5),
                   ),
                 ),
               ],
+            ),
+          ),
+          Text(
+            DateFormat('h:mm a').format(activity.time),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.hintColor.withOpacity(0.4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MinimalFAB extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _MinimalFAB({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: AnimatedEntry(
+        offset: const Offset(0, 0.2),
+        child: FloatingActionButton.extended(
+          onPressed: onPressed,
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 4,
+          highlightElevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+          ),
+          icon: const Icon(Icons.add_rounded, size: 20),
+          label: Text(
+            "Log Activity",
+            style: AppTextStyles.label.copyWith(
+              fontWeight: AppTextStyles.fontWeightBold,
+              letterSpacing: 0.2,
             ),
           ),
         ),

@@ -1,7 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:fittrack/features/auth/screens/auth_gate.dart';
+import 'package:fittrack/features/auth/screens/auth_success_screen.dart';
+import 'package:fittrack/features/auth/screens/enter_phone_screen.dart';
+import 'package:fittrack/features/auth/screens/otp_verification_screen.dart';
+import 'package:fittrack/features/auth/screens/splash_screen.dart';
 import 'package:fittrack/features/meals/screens/add_meal_screen.dart';
+import 'package:fittrack/features/onboarding/screens/onboarding_flow_screen.dart';
 import 'package:fittrack/features/workouts/screens/add_workout_screen.dart';
 import 'package:fittrack/screens/main_screen.dart';
-import 'package:fittrack/screens/onboarding_screen.dart';
 import 'package:fittrack/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +15,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   await Hive.initFlutter();
   await Hive.openBox("mealsBox");
@@ -24,11 +30,31 @@ void main() async {
 }
 
 final _router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/splash',
   routes: [
     GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
       path: '/',
-      builder: (context, state) => const OnboardingScreen(),
+      builder: (context, state) => const AuthGate(),
+    ),
+    GoRoute(
+      path: '/phone',
+      builder: (context, state) => const EnterPhoneScreen(),
+    ),
+    GoRoute(
+      path: '/otp',
+      builder: (context, state) => const OtpVerificationScreen(),
+    ),
+    GoRoute(
+      path: '/auth-success',
+      builder: (context, state) => const AuthSuccessScreen(),
+    ),
+    GoRoute(
+      path: '/onboarding',
+      builder: (context, state) => const OnboardingFlowScreen(),
     ),
     GoRoute(
       path: '/home',

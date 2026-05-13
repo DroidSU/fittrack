@@ -1,68 +1,76 @@
+import 'dart:async';
+
+import 'package:fittrack/core/providers/firebase_providers.dart';
+import 'package:fittrack/features/auth/providers/auth_provider.dart';
 import 'package:fittrack/features/workouts/models/workout.dart';
+import 'package:fittrack/features/workouts/repositories/workouts_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
-class WorkoutNotifier extends Notifier<List<Workout>> {
-  late Box box;
+final workoutsRepositoryProvider = Provider<WorkoutsRepository>((ref) {
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
+  if (user == null) {
+    return WorkoutsRepository(
+      ref.watch(firestoreProvider),
+      Hive.box('workoutsBox'),
+      'dummy_user',
+    );
+  }
+  return WorkoutsRepository(
+    ref.watch(firestoreProvider),
+    Hive.box('workoutsBox'),
+    user.uid,
+  );
+});
 
+class WorkoutNotifier extends AsyncNotifier<List<Workout>> {
   @override
-  List<Workout> build() {
-    box = Hive.box("workoutsBox");
-
-    final workoutsData = box.get("workouts", defaultValue: []) as List;
-
-    return workoutsData.map((item) {
-      return Workout.fromJson(Map<String, dynamic>.from(item));
-    }).toList();
+  FutureOr<List<Workout>> build() async {
+    return ref.watch(workoutsRepositoryProvider).getWorkouts();
   }
 
-  void addWorkout(Workout workout) {
-    final updatedState = [...state, workout];
-    state = updatedState;
-
-    _saveToDb(updatedState);
+  Future<void> addWorkout(Workout workout) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(workoutsRepositoryProvider).addWorkout(workout);
+      return ref.read(workoutsRepositoryProvider).getWorkouts();
+    });
   }
 
-  void removeWorkout(int index) {
-    final updatedState = [...state]..removeAt(index);
-    state = updatedState;
-
-    _saveToDb(updatedState);
-  }
-
-  int get totalCalories {
-    return state.fold(0, (sum, workout) => sum + workout.caloriesBurned);
-  }
-
-  int get totalDuration {
-    return state.fold(0, (sum, workout) => sum + workout.durationMinutes);
-  }
-
-  int get workoutsCompleted {
-    return state.length;
-  }
-
-  void _saveToDb(List<Workout> workouts) {
-    final data = workouts.map((w) => w.toJson()).toList();
-    box.put('workouts', data);
+  Future<void> removeWorkout(String id) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(workoutsRepositoryProvider).deleteWorkout(id);
+      return ref.read(workoutsRepositoryProvider).getWorkouts();
+    });
   }
 }
 
-final workoutsProvider = NotifierProvider<WorkoutNotifier, List<Workout>>(
+final workoutsProvider = AsyncNotifierProvider<WorkoutNotifier, List<Workout>>(
   WorkoutNotifier.new,
 );
 
 final totalCaloriesProvider = Provider<int>((ref) {
-  ref.watch(workoutsProvider);
-  return ref.read(workoutsProvider.notifier).totalCalories;
+  final workoutsAsync = ref.watch(workoutsProvider);
+  return workoutsAsync.maybeWhen(
+    data: (workouts) => workouts.fold(0, (sum, w) => sum + w.caloriesBurned),
+    orElse: () => 0,
+  );
 });
 
 final totalDurationProvider = Provider<int>((ref) {
-  ref.watch(workoutsProvider);
-  return ref.read(workoutsProvider.notifier).totalDuration;
+  final workoutsAsync = ref.watch(workoutsProvider);
+  return workoutsAsync.maybeWhen(
+    data: (workouts) => workouts.fold(0, (sum, w) => sum + w.durationMinutes),
+    orElse: () => 0,
+  );
 });
 
 final workoutsCompletedProvider = Provider<int>((ref) {
-  ref.watch(workoutsProvider);
-  return ref.read(workoutsProvider.notifier).workoutsCompleted;
+  final workoutsAsync = ref.watch(workoutsProvider);
+  return workoutsAsync.maybeWhen(
+    data: (workouts) => workouts.length,
+    orElse: () => 0,
+  );
 });

@@ -31,162 +31,161 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final mealsList = ref.watch(mealProvider);
+    final mealsAsync = ref.watch(mealProvider);
     final totalProtein = ref.watch(totalProteinProvider);
     const targetProtein = 150.0;
     final proteinPercentage = (totalProtein / targetProtein).clamp(0.0, 1.0);
-
-    // Group meals by date (Today, Yesterday, etc.)
-    // For simplicity in this UI, we'll just show the full list sorted by newest
-    final filteredMeals = mealsList.where((meal) {
-      return meal.name.toLowerCase().startsWith(_searchQuery.toLowerCase());
-    }).toList().reversed.toList();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       floatingActionButton: _CustomFAB(onPressed: () => context.push("/add-meal")),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Header Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: mealsAsync.when(
+          data: (mealsList) {
+            final filteredMeals = mealsList.where((meal) {
+              return meal.name.toLowerCase().startsWith(_searchQuery.toLowerCase());
+            }).toList().reversed.toList();
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // 1. Header Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Meals",
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: AppTextStyles.fontWeightBold,
-                          color: theme.colorScheme.onSurface,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Meals",
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: AppTextStyles.fontWeightBold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          Text(
+                            "Track your daily protein intake",
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        "Track your daily protein intake",
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-                        ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.bar_chart, color: AppColors.primary),
                       ),
                     ],
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.bar_chart, color: AppColors.primary),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // 2. Protein Summary Card
+                  ProteinCard(
+                    current: totalProtein,
+                    target: targetProtein,
+                    percentage: proteinPercentage,
                   ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.md),
 
-              // 2. Protein Summary Card
-              ProteinCard(
-                current: totalProtein,
-                target: targetProtein,
-                percentage: proteinPercentage,
-              ),
-              const SizedBox(height: AppSpacing.md),
-
-              // 3. Search & Filter Section
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (value) {
-                          setState(() {
-                            _searchQuery = value;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Search meals...",
-                          hintStyle: TextStyle(
-                              color: theme.hintColor.withOpacity(0.3),
-                              fontSize: AppTextStyles.fontSizeSm),
-                          prefixIcon: Icon(Icons.search,
-                              color: theme.hintColor.withOpacity(0.3),
-                              size: 20),
-                          border: InputBorder.none,
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 10),
+                  // 3. Search & Filter Section
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Search meals...",
+                              hintStyle: TextStyle(
+                                  color: theme.hintColor.withOpacity(0.3),
+                                  fontSize: AppTextStyles.fontSizeSm),
+                              prefixIcon: Icon(Icons.search,
+                                  color: theme.hintColor.withOpacity(0.3),
+                                  size: 20),
+                              border: InputBorder.none,
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Container(
+                        height: 46,
+                        width: 46,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+                        ),
+                        child: Icon(Icons.tune, color: theme.hintColor.withOpacity(0.5), size: 20),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    height: 46,
-                    width: 46,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+                  const SizedBox(height: 20),
+
+                  // 4. Meals List Section
+                  const _MealSectionHeader(title: "All Logged Meals"),
+                  const SizedBox(height: AppSpacing.sm),
+                  
+                  if (filteredMeals.isEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: AnimatedEntry(
+                          child: Text(
+                            _searchQuery.isEmpty ? "No meals logged yet" : "No meals found for '$_searchQuery'",
+                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: filteredMeals.length,
+                      itemBuilder: (context, index) {
+                        final meal = filteredMeals[index];
+                        final timeFormatted = DateFormat('h:mm a').format(meal.createdAt);
+                        
+                        return MealItem(
+                          index: index,
+                          id: meal.id,
+                          name: meal.name,
+                          time: timeFormatted,
+                          protein: "${meal.protein.toInt()}g",
+                          image: meal.emoji,
+                          onDelete: () {
+                            ref.read(mealProvider.notifier).removeMeal(meal.id);
+                          },
+                        );
+                      },
                     ),
-                    child: Icon(Icons.tune, color: theme.hintColor.withOpacity(0.5), size: 20),
-                  ),
+
+                  const SizedBox(height: 20),
+                  // 5. Tip Card
+                  _TipCard(percentage: (proteinPercentage * 100).toInt()),
+                  const SizedBox(height: 80), // Spacing for FAB
                 ],
               ),
-              const SizedBox(height: 20),
-
-              // 4. Meals List Section
-              const _MealSectionHeader(title: "All Logged Meals"),
-              const SizedBox(height: AppSpacing.sm),
-              
-              if (filteredMeals.isEmpty)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40),
-                    child: AnimatedEntry(
-                      child: Text(
-                        _searchQuery.isEmpty ? "No meals logged yet" : "No meals found for '$_searchQuery'",
-                        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                )
-              else
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: filteredMeals.length,
-                  itemBuilder: (context, index) {
-                    final meal = filteredMeals[index];
-                    final timeFormatted = DateFormat('h:mm a').format(meal.createdAt);
-                    
-                    return MealItem(
-                      index: index,
-                      id: meal.id,
-                      name: meal.name,
-                      time: timeFormatted,
-                      protein: "${meal.protein.toInt()}g",
-                      image: meal.emoji,
-                      onDelete: () {
-                        // Note: we need to find the original index in the state to remove it correctly
-                        // since filteredMeals is a copy.
-                        final originalIndex = mealsList.indexOf(meal);
-                        if (originalIndex != -1) {
-                          ref.read(mealProvider.notifier).removeMeal(originalIndex);
-                        }
-                      },
-                    );
-                  },
-                ),
-
-              const SizedBox(height: 20),
-              // 5. Tip Card
-              _TipCard(percentage: (proteinPercentage * 100).toInt()),
-              const SizedBox(height: 80), // Spacing for FAB
-            ],
-          ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, s) => Center(child: Text('Error: $e')),
         ),
       ),
     );

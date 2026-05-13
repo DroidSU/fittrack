@@ -134,7 +134,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
     );
   }
 
-  void _saveWorkout() {
+  Future<void> _saveWorkout() async {
     final duration = int.tryParse(_durationController.text) ?? 0;
     final calories = int.tryParse(_caloriesController.text) ?? 0;
 
@@ -154,8 +154,16 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
       createdAt: DateTime.now(),
     );
 
-    ref.read(workoutsProvider.notifier).addWorkout(workout);
-    context.pop();
+    try {
+      await ref.read(workoutsProvider.notifier).addWorkout(workout);
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error saving workout: $e")),
+        );
+      }
+    }
   }
 
   @override
@@ -170,6 +178,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final workoutsState = ref.watch(workoutsProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -351,7 +360,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: _saveWorkout,
+                  onPressed: workoutsState.isLoading ? null : _saveWorkout,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -360,12 +369,21 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    "Save Workout",
-                    style: TextStyle(
-                        fontSize: AppTextStyles.fontSizeSm,
-                        fontWeight: AppTextStyles.fontWeightBold),
-                  ),
+                  child: workoutsState.isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Save Workout",
+                          style: TextStyle(
+                              fontSize: AppTextStyles.fontSizeSm,
+                              fontWeight: AppTextStyles.fontWeightBold),
+                        ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -377,7 +395,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
   }
 }
 
-class _TypeCard extends StatefulWidget {
+class _TypeCard extends StatelessWidget {
   final String? emoji;
   final IconData? icon;
   final String label;
@@ -391,15 +409,10 @@ class _TypeCard extends StatefulWidget {
   });
 
   @override
-  State<_TypeCard> createState() => _TypeCardState();
-}
-
-class _TypeCardState extends State<_TypeCard> {
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AnimatedScale(
-      scale: widget.isSelected ? 1.05 : 1.0,
+      scale: isSelected ? 1.05 : 1.0,
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOutBack,
       child: AnimatedContainer(
@@ -408,13 +421,13 @@ class _TypeCardState extends State<_TypeCard> {
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: widget.isSelected ? AppColors.primary.withOpacity(0.08) : theme.colorScheme.surface,
+          color: isSelected ? AppColors.primary.withOpacity(0.08) : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: widget.isSelected ? AppColors.primary : theme.dividerColor.withOpacity(0.1),
-            width: widget.isSelected ? 2.0 : 1.5,
+            color: isSelected ? AppColors.primary : theme.dividerColor.withOpacity(0.1),
+            width: isSelected ? 2.0 : 1.5,
           ),
-          boxShadow: widget.isSelected ? [
+          boxShadow: isSelected ? [
             BoxShadow(
               color: AppColors.primary.withOpacity(0.1),
               blurRadius: 8,
@@ -425,18 +438,18 @@ class _TypeCardState extends State<_TypeCard> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (widget.emoji != null)
-              Text(widget.emoji!,
+            if (emoji != null)
+              Text(emoji!,
                   style: const TextStyle(fontSize: AppTextStyles.fontSizeXxl))
-            else if (widget.icon != null)
-              Icon(widget.icon, color: theme.hintColor.withOpacity(0.4), size: 28),
+            else if (icon != null)
+              Icon(icon, color: theme.hintColor.withOpacity(0.4), size: 28),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              widget.label,
+              label,
               style: TextStyle(
                 fontSize: AppTextStyles.fontSizeXxs,
                 fontWeight: AppTextStyles.fontWeightBold,
-                color: widget.isSelected
+                color: isSelected
                     ? AppColors.primary
                     : theme.colorScheme.onSurface.withOpacity(0.8),
               ),

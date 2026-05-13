@@ -6,26 +6,33 @@ import '../../workouts/providers/workout_notifier.dart';
 import '../models/dashboard_insight.dart';
 
 final weeklyProteinIntakeProvider = Provider<List<double>>((ref) {
-  final meals = ref.watch(mealProvider);
-  final now = DateTime.now();
-  final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-  
-  final weeklyData = List.generate(7, (index) {
-    final day = startOfWeek.add(Duration(days: index));
-    return meals
-        .where((m) =>
-            m.createdAt.year == day.year &&
-            m.createdAt.month == day.month &&
-            m.createdAt.day == day.day)
-        .fold(0.0, (sum, m) => sum + m.protein);
-  });
-  
-  return weeklyData;
+  final mealsAsync = ref.watch(mealProvider);
+  return mealsAsync.maybeWhen(
+    data: (meals) {
+      final now = DateTime.now();
+      final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      
+      final weeklyData = List.generate(7, (index) {
+        final day = startOfWeek.add(Duration(days: index));
+        return meals
+            .where((m) =>
+                m.createdAt.year == day.year &&
+                m.createdAt.month == day.month &&
+                m.createdAt.day == day.day)
+            .fold(0.0, (sum, m) => sum + m.protein);
+      });
+      return weeklyData;
+    },
+    orElse: () => List.filled(7, 0.0),
+  );
 });
 
 final dashboardStreakProvider = Provider<int>((ref) {
-  final meals = ref.watch(mealProvider);
-  final workouts = ref.watch(workoutsProvider);
+  final mealsAsync = ref.watch(mealProvider);
+  final workoutsAsync = ref.watch(workoutsProvider);
+  
+  final meals = mealsAsync.value ?? [];
+  final workouts = workoutsAsync.value ?? [];
   
   final allActivityDates = {
     ...meals.map((m) => DateTime(m.createdAt.year, m.createdAt.month, m.createdAt.day)),
@@ -63,7 +70,8 @@ final weeklyGoalProgressProvider = Provider<double>((ref) {
 });
 
 final averageProteinProvider = Provider<double>((ref) {
-  final meals = ref.watch(mealProvider);
+  final mealsAsync = ref.watch(mealProvider);
+  final meals = mealsAsync.value ?? [];
   if (meals.isEmpty) return 0;
   final days = {
     ...meals.map((m) => DateTime(m.createdAt.year, m.createdAt.month, m.createdAt.day))
@@ -72,9 +80,12 @@ final averageProteinProvider = Provider<double>((ref) {
 });
 
 final dashboardInsightsProvider = Provider<List<DashboardInsight>>((ref) {
-  final meals = ref.watch(mealProvider);
-  final workouts = ref.watch(workoutsProvider);
+  final mealsAsync = ref.watch(mealProvider);
+  final workoutsAsync = ref.watch(workoutsProvider);
   final avgProtein = ref.watch(averageProteinProvider);
+  
+  final meals = mealsAsync.value ?? [];
+  final workouts = workoutsAsync.value ?? [];
   
   double maxProtein = 0;
   if (meals.isNotEmpty) {

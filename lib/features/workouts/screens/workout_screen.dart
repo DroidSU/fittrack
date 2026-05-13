@@ -22,213 +22,216 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     
-    final workouts = ref.watch(workoutsProvider);
+    final workoutsAsync = ref.watch(workoutsProvider);
     final totalCalories = ref.watch(totalCaloriesProvider);
     final totalDuration = ref.watch(totalDurationProvider);
     final workoutsCompleted = ref.watch(workoutsCompletedProvider);
-
-    // Grouping workouts (simplification: Today vs Yesterday)
-    final now = DateTime.now();
-    final todayWorkouts = workouts.where((w) {
-      return w.createdAt.year == now.year && 
-             w.createdAt.month == now.month && 
-             w.createdAt.day == now.day;
-    }).toList().reversed.toList();
-
-    final yesterdayWorkouts = workouts.where((w) {
-      final yesterday = now.subtract(const Duration(days: 1));
-      return w.createdAt.year == yesterday.year && 
-             w.createdAt.month == yesterday.month && 
-             w.createdAt.day == yesterday.day;
-    }).toList().reversed.toList();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       floatingActionButton: _AddWorkoutFAB(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Header Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Workouts",
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: AppTextStyles.fontWeightBold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      Text(
-                        "Track your workouts and stay consistent",
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.calendar_today_outlined, 
-                        color: theme.colorScheme.onSurface, size: 18),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
+        child: workoutsAsync.when(
+          data: (workouts) {
+            final now = DateTime.now();
+            final todayWorkouts = workouts.where((w) {
+              return w.createdAt.year == now.year && 
+                     w.createdAt.month == now.month && 
+                     w.createdAt.day == now.day;
+            }).toList().reversed.toList();
 
-              // 2. Summary Section Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Today's Summary",
-                    style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: AppTextStyles.fontWeightBold),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: const Text("View Weekly Stats",
-                        style:
-                            TextStyle(fontSize: AppTextStyles.fontSizeXs)),
-                    label: const Icon(Icons.chevron_right, size: 14),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
+            final yesterdayWorkouts = workouts.where((w) {
+              final yesterday = now.subtract(const Duration(days: 1));
+              return w.createdAt.year == yesterday.year && 
+                     w.createdAt.month == yesterday.month && 
+                     w.createdAt.day == yesterday.day;
+            }).toList().reversed.toList();
 
-              // 3. Summary Card
-              _SummaryCard(
-                theme: theme, 
-                isDark: isDark,
-                completed: workoutsCompleted,
-                calories: totalCalories,
-                duration: totalDuration,
-              ),
-              const SizedBox(height: 20),
-
-              // 4. Workout History Section Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Workout History",
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
-                  ),
+                  // 1. Header Section
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Newest",
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Workouts",
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: AppTextStyles.fontWeightBold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          Text(
+                            "Track your workouts and stay consistent",
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
                       ),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-                        size: 14,
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.calendar_today_outlined, 
+                            color: theme.colorScheme.onSurface, size: 18),
+                        ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // 2. Summary Section Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Today's Summary",
+                        style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: AppTextStyles.fontWeightBold),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {},
+                        icon: const Text("View Weekly Stats",
+                            style:
+                                TextStyle(fontSize: AppTextStyles.fontSizeXs)),
+                        label: const Icon(Icons.chevron_right, size: 14),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // 3. Summary Card
+                  _SummaryCard(
+                    theme: theme, 
+                    isDark: isDark,
+                    completed: workoutsCompleted,
+                    calories: totalCalories,
+                    duration: totalDuration,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // 4. Workout History Section Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Workout History",
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Newest",
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            size: 14,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  if (workouts.isEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: AnimatedEntry(
+                          child: Text(
+                            "No workouts logged yet",
+                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    )
+                  else ...[
+                    if (todayWorkouts.isNotEmpty) ...[
+                      Text(
+                        "TODAY",
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      ...todayWorkouts.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final workout = entry.value;
+                        return _WorkoutHistoryItem(
+                          index: index,
+                          id: workout.id,
+                          title: workout.name,
+                          time: DateFormat('h:mm a').format(workout.createdAt),
+                          duration: "${workout.durationMinutes} min",
+                          calories: "${workout.caloriesBurned} kcal",
+                          emoji: workout.type.emoji,
+                          onDelete: () {
+                            ref.read(workoutsProvider.notifier).removeWorkout(workout.id);
+                          },
+                        );
+                      }),
+                    ],
+                    
+                    if (yesterdayWorkouts.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        "YESTERDAY",
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      ...yesterdayWorkouts.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final workout = entry.value;
+                        return _WorkoutHistoryItem(
+                          index: index + todayWorkouts.length,
+                          id: workout.id,
+                          title: workout.name,
+                          time: DateFormat('h:mm a').format(workout.createdAt),
+                          duration: "${workout.durationMinutes} min",
+                          calories: "${workout.caloriesBurned} kcal",
+                          emoji: workout.type.emoji,
+                          onDelete: () {
+                            ref.read(workoutsProvider.notifier).removeWorkout(workout.id);
+                          },
+                        );
+                      }),
+                    ],
+                  ],
+
+                  const SizedBox(height: AppSpacing.lg),
+                  // 6. Motivation Card
+                  const _MotivationCard(),
+                  const SizedBox(height: 80), // Space for FAB
                 ],
               ),
-              const SizedBox(height: 10),
-
-              if (workouts.isEmpty)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40),
-                    child: AnimatedEntry(
-                      child: Text(
-                        "No workouts logged yet",
-                        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                )
-              else ...[
-                if (todayWorkouts.isNotEmpty) ...[
-                  Text(
-                    "TODAY",
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  ...todayWorkouts.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final workout = entry.value;
-                    return _WorkoutHistoryItem(
-                      index: index,
-                      id: workout.id,
-                      title: workout.name,
-                      time: DateFormat('h:mm a').format(workout.createdAt),
-                      duration: "${workout.durationMinutes} min",
-                      calories: "${workout.caloriesBurned} kcal",
-                      emoji: workout.type.emoji,
-                      onDelete: () {
-                        final originalIndex = workouts.indexOf(workout);
-                        ref.read(workoutsProvider.notifier).removeWorkout(originalIndex);
-                      },
-                    );
-                  }),
-                ],
-                
-                if (yesterdayWorkouts.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    "YESTERDAY",
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.4),
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  ...yesterdayWorkouts.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final workout = entry.value;
-                    return _WorkoutHistoryItem(
-                      index: index + todayWorkouts.length,
-                      id: workout.id,
-                      title: workout.name,
-                      time: DateFormat('h:mm a').format(workout.createdAt),
-                      duration: "${workout.durationMinutes} min",
-                      calories: "${workout.caloriesBurned} kcal",
-                      emoji: workout.type.emoji,
-                      onDelete: () {
-                        final originalIndex = workouts.indexOf(workout);
-                        ref.read(workoutsProvider.notifier).removeWorkout(originalIndex);
-                      },
-                    );
-                  }),
-                ],
-              ],
-
-              const SizedBox(height: AppSpacing.lg),
-              // 6. Motivation Card
-              const _MotivationCard(),
-              const SizedBox(height: 80), // Space for FAB
-            ],
-          ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, s) => Center(child: Text('Error: $e')),
         ),
       ),
     );
