@@ -55,8 +55,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         unselectedItemColor: theme.unselectedWidgetColor.withOpacity(0.4),
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        selectedFontSize: AppTextStyles.fontSizeXs,
+        selectedFontSize: AppTextStyles.fontSizeSm,
         unselectedFontSize: AppTextStyles.fontSizeXs,
+        iconSize: 28,
         type: BottomNavigationBarType.fixed,
         backgroundColor: theme.colorScheme.surface,
         items: const [

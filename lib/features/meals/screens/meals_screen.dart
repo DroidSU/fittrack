@@ -55,27 +55,33 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Meals",
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: AppTextStyles.fontWeightBold,
-                              color: theme.colorScheme.onSurface,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Meals",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: AppTextStyles.fontWeightBold,
+                                color: theme.colorScheme.onSurface,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "Track your daily protein intake",
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            Text(
+                              "Track your daily protein intake",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.bar_chart, color: AppColors.primary),
+                        icon: const Icon(Icons.bar_chart, color: AppColors.primary, size: 28),
                       ),
                     ],
                   ),
@@ -94,10 +100,10 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                     children: [
                       Expanded(
                         child: Container(
-                          height: 46,
+                          height: 52,
                           decoration: BoxDecoration(
                             color: theme.colorScheme.surface,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
                           ),
                           child: TextField(
@@ -111,27 +117,27 @@ class _MealsScreenState extends ConsumerState<MealsScreen> {
                               hintText: "Search meals...",
                               hintStyle: TextStyle(
                                   color: theme.hintColor.withOpacity(0.3),
-                                  fontSize: AppTextStyles.fontSizeSm),
+                                  fontSize: AppTextStyles.fontSizeMd),
                               prefixIcon: Icon(Icons.search,
                                   color: theme.hintColor.withOpacity(0.3),
-                                  size: 20),
+                                  size: 24),
                               border: InputBorder.none,
                               contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 10),
+                                  const EdgeInsets.symmetric(vertical: 14),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Container(
-                        height: 46,
-                        width: 46,
+                        height: 52,
+                        width: 52,
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
                         ),
-                        child: Icon(Icons.tune, color: theme.hintColor.withOpacity(0.5), size: 20),
+                        child: Icon(Icons.tune, color: theme.hintColor.withOpacity(0.5), size: 24),
                       ),
                     ],
                   ),
@@ -205,21 +211,21 @@ class _MealSectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: theme.textTheme.titleMedium
+          style: theme.textTheme.titleLarge
               ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
         ),
         Row(
           children: [
             Text(
               "Newest",
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
               ),
             ),
             Icon(
               Icons.keyboard_arrow_down,
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-              size: 16,
+              size: 20,
             ),
           ],
         ),
@@ -240,15 +246,15 @@ class _TipCard extends StatelessWidget {
     const Color greenAccent = Color(0xFF34A853);
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: greenBg,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          const Icon(Icons.lightbulb_outline, color: greenAccent, size: 20),
-          const SizedBox(width: 10),
+          const Icon(Icons.lightbulb_outline, color: greenAccent, size: 24),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,12 +264,12 @@ class _TipCard extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: AppTextStyles.fontWeightBold,
                     color: greenAccent,
-                    fontSize: AppTextStyles.fontSizeSm,
+                    fontSize: AppTextStyles.fontSizeMd,
                   ),
                 ),
                 Text(
                   "Great job! You're $percentage% towards your daily protein goal.",
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
                 ),
@@ -303,12 +309,12 @@ class _CustomFAB extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
-              Icon(Icons.add, color: Colors.white, size: 28),
+              Icon(Icons.add, color: Colors.white, size: 32),
               Text(
                 "Add Meal",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: AppTextStyles.fontSizeXxs,
+                  fontSize: AppTextStyles.fontSizeXs,
                   fontWeight: AppTextStyles.fontWeightBold,
                 ),
               ),

@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
               children: [
                 Icon(
                   Icons.fitness_center_rounded,
-                  size: 80,
+                  size: 100,
                   color: primaryColor,
                 )
                 .animate()
@@ -58,6 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Text(
                   'FitTrack',
                   style: AppTextStyles.h1.copyWith(
+                    fontSize: 36,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                     color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -71,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 
                 Text(
                   'Track. Train. Improve.',
-                  style: AppTextStyles.bodyMd.copyWith(
+                  style: AppTextStyles.bodyLg.copyWith(
                     color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     letterSpacing: 0.5,
                   ),

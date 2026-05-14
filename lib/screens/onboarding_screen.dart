@@ -13,57 +13,65 @@ class OnboardingScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                "assets/images/onboarding_placeholder_1.png",
-                fit: BoxFit.cover,
-                height: 400,
-              ),
-              Column(
-                children: [
-                  Text(
-                    "Welcome to FitTrack",
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: AppTextStyles.fontWeightBold,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    "Track your workouts, meals and achieve your fitness goals",
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.textTheme.bodyLarge?.color?.withOpacity(0.6),
-                      fontWeight: AppTextStyles.fontWeightNormal,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () => context.go('/home'),
-                  style: theme.elevatedButtonTheme.style?.copyWith(
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: AppSpacing.xl),
+                Image.asset(
+                  "assets/images/onboarding_placeholder_1.png",
+                  fit: BoxFit.contain,
+                  height: 300,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                Column(
+                  children: [
+                    Text(
+                      "Welcome to FitTrack",
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: AppTextStyles.fontWeightBold,
                       ),
                     ),
-                  ),
-                  child: const Text(
-                    "Get Started",
-                    style: TextStyle(
-                        fontSize: AppTextStyles.fontSizeLg,
-                        fontWeight: AppTextStyles.fontWeightBold),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      "Track your workouts, meals and achieve your fitness goals",
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.textTheme.bodyLarge?.color?.withOpacity(0.6),
+                        fontWeight: AppTextStyles.fontWeightNormal,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 48),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () => context.go('/home'),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      "Get Started",
+                      style: TextStyle(
+                          fontSize: AppTextStyles.fontSizeXl,
+                          fontWeight: AppTextStyles.fontWeightBold),
+                    ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.lg),
+              ],
+            ),
           ),
         ),
       ),

@@ -73,12 +73,12 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: theme.colorScheme.onSurface, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: theme.colorScheme.onSurface, size: 22),
           onPressed: () => context.pop(),
         ),
         title: Text(
           "Add Meal",
-          style: theme.textTheme.titleMedium
+          style: theme.textTheme.titleLarge
               ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
         ),
         centerTitle: true,
@@ -92,16 +92,20 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               // Header Section
               Text(
                 "Log Your Meal 🍽️",
-                style: theme.textTheme.headlineSmall?.copyWith(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: AppTextStyles.fontWeightBold,
-                  fontSize: AppTextStyles.fontSizeXxl,
+                  fontSize: 28,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: AppSpacing.xs),
+              const SizedBox(height: 8),
               Text(
                 "Track your nutrition to reach your goals.",
-                style: theme.textTheme.bodyMedium?.copyWith(
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.hintColor.withOpacity(0.5),
                 ),
               ),
@@ -110,7 +114,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               // Emoji Selector
               Text(
                 "Choose Emoji",
-                style: theme.textTheme.titleSmall?.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: AppTextStyles.fontWeightBold,
                   letterSpacing: 0.5,
                 ),
@@ -126,7 +130,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                       onTap: () => setState(() => _selectedEmoji = emoji),
                       child: Container(
                         margin: const EdgeInsets.only(right: 12),
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: isSelected ? AppColors.primary : theme.colorScheme.surface,
                           borderRadius: BorderRadius.circular(16),
@@ -145,7 +149,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                         ),
                         child: Text(emoji,
                             style: const TextStyle(
-                                fontSize: AppTextStyles.fontSizeXl)),
+                                fontSize: 28)),
                       ),
                     );
                   }).toList(),
@@ -173,7 +177,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                   children: [
                     Text(
                       "Meal Details",
-                      style: theme.textTheme.labelSmall?.copyWith(
+                      style: theme.textTheme.labelLarge?.copyWith(
                         color: theme.hintColor.withOpacity(0.6),
                         fontWeight: AppTextStyles.fontWeightBold,
                       ),
@@ -188,14 +192,14 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                         hintText: "e.g. Chicken & Rice",
                         labelStyle: TextStyle(
                             color: theme.hintColor.withOpacity(0.5),
-                            fontSize: AppTextStyles.fontSizeXs),
+                            fontSize: AppTextStyles.fontSizeSm),
                         border: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     TextField(
                       controller: _proteinController,
                       keyboardType: TextInputType.number,
@@ -206,7 +210,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                         hintText: "e.g. 30",
                         labelStyle: TextStyle(
                             color: theme.hintColor.withOpacity(0.5),
-                            fontSize: AppTextStyles.fontSizeXs),
+                            fontSize: AppTextStyles.fontSizeSm),
                         border: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
                         focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
@@ -231,15 +235,15 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.lightbulb_outline, color: AppColors.primary, size: 18),
-                    const SizedBox(width: 10),
+                    const Icon(Icons.lightbulb_outline, color: AppColors.primary, size: 22),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         "Try to include high-protein foods like eggs, chicken, or lentils.",
                         style: TextStyle(
                           color: isDark ? AppColors.primaryLight : AppColors.primary,
                           fontWeight: AppTextStyles.fontWeightMedium,
-                          fontSize: AppTextStyles.fontSizeXs,
+                          fontSize: AppTextStyles.fontSizeSm,
                         ),
                       ),
                     ),
@@ -251,7 +255,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
               // Save Button
               SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: mealsState.isLoading ? null : _saveMeal,
                   style: ElevatedButton.styleFrom(
@@ -259,13 +263,13 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: mealsState.isLoading
                       ? const SizedBox(
-                          height: 20,
-                          width: 20,
+                          height: 24,
+                          width: 24,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 2,
@@ -274,7 +278,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                       : const Text(
                           "Save Meal",
                           style: TextStyle(
-                            fontSize: AppTextStyles.fontSizeSm,
+                            fontSize: AppTextStyles.fontSizeMd,
                             fontWeight: AppTextStyles.fontWeightBold,
                           ),
                         ),

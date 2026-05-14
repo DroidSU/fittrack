@@ -47,10 +47,10 @@ class MealItem extends StatelessWidget {
         ),
         child: Container(
           margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
             boxShadow: [
               BoxShadow(
@@ -64,18 +64,18 @@ class MealItem extends StatelessWidget {
             children: [
               // 1. Meal Image / Emoji
               Container(
-                height: 44,
-                width: 44,
+                height: 52,
+                width: 52,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
                 child: Text(image,
                     style:
-                        const TextStyle(fontSize: AppTextStyles.fontSizeXl)),
+                        const TextStyle(fontSize: 28)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
 
               // 2. Name and Time
               Expanded(
@@ -84,25 +84,26 @@ class MealItem extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: theme.textTheme.titleSmall?.copyWith(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: AppTextStyles.fontWeightBold,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(Icons.access_time,
-                            size: 12,
+                            size: 14,
                             color: theme.textTheme.bodySmall?.color
                                 ?.withOpacity(0.5)),
                         const SizedBox(width: AppSpacing.xs),
                         Text(
                           time,
-                          style: theme.textTheme.bodySmall?.copyWith(
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.textTheme.bodySmall?.color
                                 ?.withOpacity(0.5),
                             fontWeight: AppTextStyles.fontWeightMedium,
-                            fontSize: AppTextStyles.fontSizeXxs,
                           ),
                         ),
                       ],
@@ -111,13 +112,15 @@ class MealItem extends StatelessWidget {
                 ),
               ),
 
+              const SizedBox(width: 8),
+
               // 3. Protein Amount
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     protein,
-                    style: theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: AppTextStyles.fontWeightBold,
                       color: AppColors.primary,
                     ),
@@ -126,18 +129,17 @@ class MealItem extends StatelessWidget {
                     "protein",
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
-                      fontSize: AppTextStyles.fontSizeXxs,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.md),
 
               // 4. Delete Action
               IconButton(
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete_outline,
-                    color: Colors.redAccent, size: 18),
+                    color: Colors.redAccent, size: 22),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),

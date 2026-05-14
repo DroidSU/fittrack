@@ -61,8 +61,8 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
             ),
             content: SizedBox(
               width: double.maxFinite,
+              height: MediaQuery.of(context).size.height * 0.45,
               child: GridView.builder(
-                shrinkWrap: true,
                 itemCount: WorkoutType.values.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
@@ -189,13 +189,13 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
           icon: Icon(
             Icons.arrow_back_ios_new,
             color: theme.colorScheme.onSurface,
-            size: 20,
+            size: 22,
           ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           "Add Workout",
-          style: theme.textTheme.titleMedium
+          style: theme.textTheme.titleLarge
               ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
         ),
         centerTitle: true,
@@ -209,16 +209,20 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
               // 1. Header Section
               Text(
                 "Log Your Workout 💪",
-                style: theme.textTheme.headlineSmall?.copyWith(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: AppTextStyles.fontWeightBold,
-                  fontSize: AppTextStyles.fontSizeXxl,
+                  fontSize: 28,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: AppSpacing.xs),
+              const SizedBox(height: 8),
               Text(
                 "Track your training and stay consistent.",
-                style: theme.textTheme.bodyMedium?.copyWith(
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.hintColor.withOpacity(0.5),
                 ),
               ),
@@ -227,7 +231,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
               // 2. Workout Type Section
               Text(
                 "Workout Type",
-                style: theme.textTheme.titleSmall?.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: AppTextStyles.fontWeightBold,
                   letterSpacing: 0.5,
                 ),
@@ -292,7 +296,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
               // 5. Notes Section
               Text(
                 "Notes (Optional)",
-                style: theme.textTheme.titleSmall?.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: AppTextStyles.fontWeightBold,
                   letterSpacing: 0.5,
                 ),
@@ -309,12 +313,12 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                 child: TextField(
                   controller: _notesController,
                   maxLines: 3,
-                  style: const TextStyle(fontSize: AppTextStyles.fontSizeSm),
+                  style: const TextStyle(fontSize: AppTextStyles.fontSizeMd),
                   decoration: InputDecoration(
                     hintText: "How did today's workout feel?",
                     hintStyle: TextStyle(
                       color: theme.hintColor.withOpacity(0.3),
-                      fontSize: AppTextStyles.fontSizeXs,
+                      fontSize: AppTextStyles.fontSizeSm,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.all(12),
@@ -335,9 +339,9 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                     const Icon(
                       Icons.auto_awesome,
                       color: AppColors.primary,
-                      size: 18,
+                      size: 22,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         "Every workout counts towards your goals.",
@@ -346,7 +350,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                               ? AppColors.primaryLight
                               : AppColors.primary,
                           fontWeight: AppTextStyles.fontWeightMedium,
-                          fontSize: AppTextStyles.fontSizeXs,
+                          fontSize: AppTextStyles.fontSizeSm,
                         ),
                       ),
                     ),
@@ -358,7 +362,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
               // 7. Save Button
               SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: workoutsState.isLoading ? null : _saveWorkout,
                   style: ElevatedButton.styleFrom(
@@ -366,13 +370,13 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: workoutsState.isLoading
                       ? const SizedBox(
-                          height: 20,
-                          width: 20,
+                          height: 24,
+                          width: 24,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 2,
@@ -381,7 +385,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                       : const Text(
                           "Save Workout",
                           style: TextStyle(
-                              fontSize: AppTextStyles.fontSizeSm,
+                              fontSize: AppTextStyles.fontSizeMd,
                               fontWeight: AppTextStyles.fontWeightBold),
                         ),
                 ),
@@ -419,7 +423,7 @@ class _TypeCard extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary.withOpacity(0.08) : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
@@ -440,14 +444,14 @@ class _TypeCard extends StatelessWidget {
           children: [
             if (emoji != null)
               Text(emoji!,
-                  style: const TextStyle(fontSize: AppTextStyles.fontSizeXxl))
+                  style: const TextStyle(fontSize: 28))
             else if (icon != null)
-              Icon(icon, color: theme.hintColor.withOpacity(0.4), size: 28),
+              Icon(icon, color: theme.hintColor.withOpacity(0.4), size: 32),
             const SizedBox(height: AppSpacing.sm),
             Text(
               label,
               style: TextStyle(
-                fontSize: AppTextStyles.fontSizeXxs,
+                fontSize: 10,
                 fontWeight: AppTextStyles.fontWeightBold,
                 color: isSelected
                     ? AppColors.primary
@@ -505,12 +509,12 @@ class _StatInputCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: theme.textTheme.labelSmall?.copyWith(
+                style: theme.textTheme.labelMedium?.copyWith(
                   color: theme.hintColor.withOpacity(0.6),
                   fontWeight: AppTextStyles.fontWeightBold,
                 ),
               ),
-              Icon(icon, color: iconColor, size: 16),
+              Icon(icon, color: iconColor, size: 20),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -536,10 +540,9 @@ class _StatInputCard extends StatelessWidget {
               const SizedBox(width: 2),
               Text(
                 unit,
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.hintColor.withOpacity(0.4),
                   fontWeight: AppTextStyles.fontWeightMedium,
-                  fontSize: AppTextStyles.fontSizeXxs,
                 ),
               ),
             ],

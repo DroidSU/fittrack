@@ -1,5 +1,4 @@
 
-
 class UserProfile {
   final String name;
   final String gender;
@@ -9,6 +8,7 @@ class UserProfile {
   final double? targetWeight;
   final String fitnessGoal;
   final String activityLevel;
+  final String? profileImageUrl;
   final bool isOnboardingCompleted;
 
   UserProfile({
@@ -20,6 +20,7 @@ class UserProfile {
     this.targetWeight,
     required this.fitnessGoal,
     required this.activityLevel,
+    this.profileImageUrl,
     this.isOnboardingCompleted = false,
   });
 
@@ -32,6 +33,7 @@ class UserProfile {
     double? targetWeight,
     String? fitnessGoal,
     String? activityLevel,
+    String? profileImageUrl,
     bool? isOnboardingCompleted,
   }) {
     return UserProfile(
@@ -43,6 +45,7 @@ class UserProfile {
       targetWeight: targetWeight ?? this.targetWeight,
       fitnessGoal: fitnessGoal ?? this.fitnessGoal,
       activityLevel: activityLevel ?? this.activityLevel,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       isOnboardingCompleted: isOnboardingCompleted ?? this.isOnboardingCompleted,
     );
   }
@@ -57,6 +60,7 @@ class UserProfile {
       'targetWeight': targetWeight,
       'fitnessGoal': fitnessGoal,
       'activityLevel': activityLevel,
+      'profileImageUrl': profileImageUrl,
       'isOnboardingCompleted': isOnboardingCompleted,
     };
   }
@@ -71,6 +75,7 @@ class UserProfile {
       targetWeight: map['targetWeight']?.toDouble(),
       fitnessGoal: map['fitnessGoal'] ?? '',
       activityLevel: map['activityLevel'] ?? '',
+      profileImageUrl: map['profileImageUrl'],
       isOnboardingCompleted: map['isOnboardingCompleted'] ?? false,
     );
   }

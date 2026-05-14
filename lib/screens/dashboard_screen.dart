@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -6,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../features/analytics/providers/dashboard_analytics_provider.dart';
-import '../features/auth/providers/auth_provider.dart';
 import '../features/meals/providers/meal_notifier.dart';
 import '../features/profile/providers/profile_provider.dart';
 import '../features/workouts/providers/workout_notifier.dart';
@@ -14,7 +15,8 @@ import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
-import '../widgets/animated_entry.dart';
+import '../widgets/action_dock.dart';
+import '../widgets/empty_state_card.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -44,17 +46,17 @@ class DashboardScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _DashboardHeader(),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
                   _ProteinGoalHeroCard(
                     current: totalProtein,
                     target: targetProtein,
                     percentage: proteinPercentage,
                   ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
                   const _WeeklyProteinMiniChart().animate().fadeIn(delay: 100.ms),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
                   const _CompactStreakAndGoalCard().animate().fadeIn(delay: 200.ms),
-                  const SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.lg),
                   const _RecentActivitySection().animate().fadeIn(delay: 300.ms),
                   const SizedBox(height: 120), // Padding for FAB
                 ],
@@ -67,8 +69,9 @@ class DashboardScreen extends ConsumerWidget {
           error: (e, s) => Center(child: Text('Error: $e')),
         ),
       ),
-      floatingActionButton: _MinimalFAB(
-        onPressed: () => context.push("/add-meal"),
+      floatingActionButton: ActionDock(
+        onLogMeal: () => context.push("/add-meal"),
+        onLogWorkout: () => context.push("/add-workout"),
       ).animate().scale(delay: 400.ms, curve: Curves.easeOutBack),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -83,72 +86,74 @@ class _DashboardHeader extends ConsumerWidget {
     final theme = Theme.of(context);
     final profileAsync = ref.watch(profileNotifierProvider);
     final userName = profileAsync.value?.name ?? "User";
+    final profileImageUrl = profileAsync.value?.profileImageUrl;
+
+    ImageProvider? profileImage;
+    if (profileImageUrl != null) {
+      if (profileImageUrl.startsWith('http')) {
+        profileImage = NetworkImage(profileImageUrl);
+      } else {
+        profileImage = FileImage(File(profileImageUrl));
+      }
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Welcome Back,",
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.hintColor.withOpacity(0.5),
-                fontWeight: AppTextStyles.fontWeightMedium,
-                letterSpacing: 0.5,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Welcome Back,",
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.hintColor.withOpacity(0.5),
+                  fontWeight: AppTextStyles.fontWeightMedium,
+                  letterSpacing: 0.5,
+                ),
               ),
-            ),
-            Text(
-              userName,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: AppTextStyles.fontWeightBold,
-                color: theme.colorScheme.onSurface,
-                letterSpacing: -0.5,
+              Text(
+                userName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: AppTextStyles.fontWeightBold,
+                  color: theme.colorScheme.onSurface,
+                  letterSpacing: -0.8,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(color: theme.dividerColor.withOpacity(0.08)),
+        const SizedBox(width: AppSpacing.md),
+        GestureDetector(
+          onTap: () => context.push("/profile"),
+          child: Container(
+            height: 48,
+            width: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary.withOpacity(0.2),
+                width: 2,
               ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () => ref.read(authNotifierProvider.notifier).logout(),
-                icon: const Icon(
-                  Icons.logout_rounded,
-                  color: AppColors.error,
-                  size: 20,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 2,
                 ),
-              ),
+              ],
             ),
-            const SizedBox(width: AppSpacing.sm),
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(color: theme.dividerColor.withOpacity(0.08)),
-              ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.notifications_none_rounded,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-              ),
+            child: CircleAvatar(
+              backgroundColor: theme.colorScheme.surface,
+              backgroundImage: profileImage,
+              child: profileImage == null
+                ? const Icon(Icons.person_rounded, color: AppColors.primary)
+                : null,
             ),
-          ],
+          ),
         ),
       ],
     );
@@ -192,11 +197,11 @@ class _ProteinGoalHeroCard extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   SizedBox(
-                    height: 70,
-                    width: 70,
+                    height: 85,
+                    width: 85,
                     child: CircularProgressIndicator(
                       value: percentage,
-                      strokeWidth: 8,
+                      strokeWidth: 10,
                       backgroundColor: AppColors.primary.withOpacity(0.08),
                       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                       strokeCap: StrokeCap.round,
@@ -204,7 +209,7 @@ class _ProteinGoalHeroCard extends StatelessWidget {
                   ),
                   Text(
                     "${(percentage * 100).toInt()}%",
-                    style: theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: AppTextStyles.fontWeightBold,
                       color: AppColors.primary,
                     ),
@@ -218,24 +223,29 @@ class _ProteinGoalHeroCard extends StatelessWidget {
                   children: [
                     Text(
                       "Daily Protein",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: AppTextStyles.fontWeightBold,
+                        fontSize: 18,
                       ),
                     ),
                     const SizedBox(height: 2),
                     RichText(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       text: TextSpan(
                         children: [
                           TextSpan(
                             text: "${current.toInt()}g",
-                            style: theme.textTheme.headlineSmall?.copyWith(
+                            style: theme.textTheme.headlineMedium?.copyWith(
                               fontWeight: AppTextStyles.fontWeightBold,
                               color: theme.colorScheme.onSurface,
                             ),
                           ),
                           TextSpan(
                             text: " / ${target.toInt()}g goal",
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.hintColor.withOpacity(0.5),
                             ),
                           ),
@@ -253,12 +263,12 @@ class _ProteinGoalHeroCard extends StatelessWidget {
             children: [
               Text(
                 "${(target - current).clamp(0, target).toInt()}g remaining",
-                style: theme.textTheme.labelSmall?.copyWith(
+                style: theme.textTheme.labelMedium?.copyWith(
                   color: theme.hintColor.withOpacity(0.6),
                   fontWeight: AppTextStyles.fontWeightMedium,
                 ),
               ),
-              const Icon(Icons.bolt_rounded, size: 14, color: Colors.orange),
+              const Icon(Icons.bolt_rounded, size: 18, color: Colors.orange),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
@@ -266,7 +276,7 @@ class _ProteinGoalHeroCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.full),
             child: LinearProgressIndicator(
               value: percentage,
-              minHeight: 6,
+              minHeight: 8,
               backgroundColor: AppColors.primary.withOpacity(0.08),
               valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
@@ -285,6 +295,7 @@ class _WeeklyProteinMiniChart extends ConsumerWidget {
     final theme = Theme.of(context);
     final weeklyData = ref.watch(weeklyProteinIntakeProvider);
     final days = ["M", "T", "W", "T", "F", "S", "S"];
+    final isDataEmpty = weeklyData.every((element) => element == 0);
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -300,68 +311,80 @@ class _WeeklyProteinMiniChart extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             child: Text(
               "Weekly Trend",
-              style: theme.textTheme.labelMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: AppTextStyles.fontWeightBold,
                 color: theme.hintColor.withOpacity(0.7),
               ),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          SizedBox(
-            height: 100,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: 200,
-                barTouchData: BarTouchData(enabled: false),
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        if (value < 0 || value >= days.length) return const SizedBox.shrink();
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 6),
-                          child: Text(
-                            days[value.toInt()],
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.hintColor.withOpacity(0.4),
-                              fontSize: 9,
-                              fontWeight: AppTextStyles.fontWeightBold,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          if (isDataEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                child: EmptyStatePlaceholder(
+                  title: "No data yet",
+                  description: "Protein intake trend will appear here",
+                  icon: Icons.bar_chart_rounded,
                 ),
-                gridData: const FlGridData(show: false),
-                borderData: FlBorderData(show: false),
-                barGroups: weeklyData.asMap().entries.map((entry) {
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: entry.value,
-                        color: AppColors.primary.withOpacity(0.8),
-                        width: 8,
-                        borderRadius: BorderRadius.circular(AppRadius.xs),
-                        backDrawRodData: BackgroundBarChartRodData(
-                          show: true,
-                          toY: 200,
-                          color: AppColors.primary.withOpacity(0.03),
-                        ),
+              ),
+            )
+          else
+            SizedBox(
+              height: 130,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: 200,
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          if (value < 0 || value >= days.length) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              days[value.toInt()],
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.hintColor.withOpacity(0.4),
+                                fontSize: 11,
+                                fontWeight: AppTextStyles.fontWeightBold,
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  );
-                }).toList(),
+                    ),
+                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  ),
+                  gridData: const FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+                  barGroups: weeklyData.asMap().entries.map((entry) {
+                    return BarChartGroupData(
+                      x: entry.key,
+                      barRods: [
+                        BarChartRodData(
+                          toY: entry.value,
+                          color: AppColors.primary.withOpacity(0.8),
+                          width: 10,
+                          borderRadius: BorderRadius.circular(AppRadius.xs),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: 200,
+                            color: AppColors.primary.withOpacity(0.03),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -394,7 +417,7 @@ class _CompactStreakAndGoalCard extends ConsumerWidget {
             value: "$streak Days",
           ),
           Container(
-            height: 30,
+            height: 40,
             width: 1,
             color: theme.dividerColor.withOpacity(0.1),
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -423,30 +446,36 @@ class _CompactStreakAndGoalCard extends ConsumerWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: color.withOpacity(0.08),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 18),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(width: AppSpacing.sm),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.hintColor.withOpacity(0.5),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.hintColor.withOpacity(0.5),
+                  ),
                 ),
-              ),
-              Text(
-                value,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: AppTextStyles.fontWeightBold,
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: AppTextStyles.fontWeightBold,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -493,7 +522,7 @@ class _RecentActivitySection extends ConsumerWidget {
           children: [
             Text(
               "Recent Activity",
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: AppTextStyles.fontWeightBold,
                 letterSpacing: -0.2,
               ),
@@ -506,7 +535,7 @@ class _RecentActivitySection extends ConsumerWidget {
               ),
               child: Text(
                 "See all",
-                style: theme.textTheme.labelMedium?.copyWith(
+                style: theme.textTheme.titleSmall?.copyWith(
                   color: AppColors.primary,
                   fontWeight: AppTextStyles.fontWeightBold,
                 ),
@@ -516,14 +545,12 @@ class _RecentActivitySection extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         if (displayActivities.isEmpty)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Text(
-                "No activities yet",
-                style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
-              ),
-            ),
+          EmptyStateCard(
+            title: "No recent activity",
+            description: "Your logged meals and workouts will appear here",
+            icon: Icons.history_rounded,
+            actionLabel: "Add your first meal",
+            onActionPressed: () => context.push("/add-meal"),
           )
         else
           ...displayActivities.map((activity) => _ActivityTile(activity: activity)),
@@ -561,14 +588,14 @@ class _ActivityTile extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            height: 44,
-            width: 44,
+            height: 48,
+            width: 48,
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
             ),
-            child: Icon(activity.icon, color: activity.color, size: 20),
+            child: Icon(activity.icon, color: activity.color, size: 22),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -577,13 +604,17 @@ class _ActivityTile extends StatelessWidget {
               children: [
                 Text(
                   activity.title,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: AppTextStyles.fontWeightSemiBold,
                   ),
                 ),
                 Text(
                   activity.subtitle,
-                  style: theme.textTheme.labelSmall?.copyWith(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.hintColor.withOpacity(0.5),
                   ),
                 ),
@@ -592,45 +623,11 @@ class _ActivityTile extends StatelessWidget {
           ),
           Text(
             DateFormat('h:mm a').format(activity.time),
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: theme.hintColor.withOpacity(0.4),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _MinimalFAB extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _MinimalFAB({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: AnimatedEntry(
-        offset: const Offset(0, 0.2),
-        child: FloatingActionButton.extended(
-          onPressed: onPressed,
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          elevation: 4,
-          highlightElevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.full),
-          ),
-          icon: const Icon(Icons.add_rounded, size: 20),
-          label: Text(
-            "Log Activity",
-            style: AppTextStyles.label.copyWith(
-              fontWeight: AppTextStyles.fontWeightBold,
-              letterSpacing: 0.2,
-            ),
-          ),
-        ),
       ),
     );
   }

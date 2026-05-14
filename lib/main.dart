@@ -6,6 +6,7 @@ import 'package:fittrack/features/auth/screens/otp_verification_screen.dart';
 import 'package:fittrack/features/auth/screens/splash_screen.dart';
 import 'package:fittrack/features/meals/screens/add_meal_screen.dart';
 import 'package:fittrack/features/onboarding/screens/onboarding_flow_screen.dart';
+import 'package:fittrack/features/profile/screens/profile_screen.dart';
 import 'package:fittrack/features/workouts/screens/add_workout_screen.dart';
 import 'package:fittrack/screens/main_screen.dart';
 import 'package:fittrack/theme/app_theme.dart';
@@ -67,6 +68,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/add-workout',
       builder: (context, state) => const AddWorkoutScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
   ],
 );

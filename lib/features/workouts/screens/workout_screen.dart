@@ -56,33 +56,40 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Workouts",
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: AppTextStyles.fontWeightBold,
-                              color: theme.colorScheme.onSurface,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Workouts",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: AppTextStyles.fontWeightBold,
+                                color: theme.colorScheme.onSurface,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "Track your workouts and stay consistent",
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            Text(
+                              "Track your workouts and stay consistent",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
                           onPressed: () {},
                           icon: Icon(Icons.calendar_today_outlined, 
-                            color: theme.colorScheme.onSurface, size: 18),
+                            color: theme.colorScheme.onSurface, size: 22),
                         ),
                       ),
                     ],
@@ -95,15 +102,15 @@ class _WorkoutState extends ConsumerState<WorkoutScreen> {
                     children: [
                       Text(
                         "Today's Summary",
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: AppTextStyles.fontWeightBold),
                       ),
                       TextButton.icon(
                         onPressed: () {},
                         icon: const Text("View Weekly Stats",
                             style:
-                                TextStyle(fontSize: AppTextStyles.fontSizeXs)),
-                        label: const Icon(Icons.chevron_right, size: 14),
+                                TextStyle(fontSize: AppTextStyles.fontSizeSm)),
+                        label: const Icon(Icons.chevron_right, size: 18),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.primary,
                           padding: EdgeInsets.zero,
@@ -323,12 +330,12 @@ class _SummaryStat extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 18),
+            child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(height: 10),
           Row(
@@ -338,14 +345,14 @@ class _SummaryStat extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: theme.textTheme.titleMedium
+                style: theme.textTheme.titleLarge
                     ?.copyWith(fontWeight: AppTextStyles.fontWeightBold),
               ),
               if (unit != null) ...[
                 const SizedBox(width: 2),
                 Text(
                   unit!,
-                  style: theme.textTheme.labelSmall?.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
                   ),
                 ),
@@ -356,9 +363,8 @@ class _SummaryStat extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: theme.textTheme.labelMedium?.copyWith(
               color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
-              fontSize: AppTextStyles.fontSizeXxs,
               height: 1.2,
             ),
           ),
@@ -409,58 +415,58 @@ class _WorkoutHistoryItem extends StatelessWidget {
           child: const Icon(Icons.delete_outline, color: Colors.redAccent),
         ),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
           ),
           child: Row(
             children: [
               Container(
-                height: 44,
-                width: 44,
+                height: 52,
+                width: 52,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
                 child: Text(emoji,
                     style:
-                        const TextStyle(fontSize: AppTextStyles.fontSizeXl)),
+                        const TextStyle(fontSize: 28)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: AppTextStyles.fontWeightBold,
-                          fontSize: AppTextStyles.fontSizeXs),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: AppTextStyles.fontWeightBold),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(Icons.calendar_today,
-                            size: 9, color: theme.hintColor.withOpacity(0.5)),
+                            size: 11, color: theme.hintColor.withOpacity(0.5)),
                         const SizedBox(width: AppSpacing.xs),
                         Text(
                           time,
-                          style: theme.textTheme.labelSmall?.copyWith(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.hintColor.withOpacity(0.5),
-                            fontSize: AppTextStyles.fontSizeXxs,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         _InfoTag(icon: Icons.access_time, label: duration),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 12),
                         _InfoTag(
                             icon: Icons.local_fire_department, label: calories),
                       ],
@@ -468,22 +474,23 @@ class _WorkoutHistoryItem extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(4),
                     decoration: const BoxDecoration(
                       color: Color(0xFFE8F5E9),
                       shape: BoxShape.circle,
                     ),
                     child:
-                        const Icon(Icons.check, color: Colors.green, size: 10),
+                        const Icon(Icons.check, color: Colors.green, size: 14),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   IconButton(
                     onPressed: onDelete,
                     icon: Icon(Icons.delete_outline,
-                        color: Colors.redAccent.withOpacity(0.6), size: 18),
+                        color: Colors.redAccent.withOpacity(0.6), size: 22),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
@@ -508,11 +515,11 @@ class _InfoTag extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 12, color: AppColors.primary.withOpacity(0.7)),
+        Icon(icon, size: 14, color: AppColors.primary.withOpacity(0.7)),
         const SizedBox(width: AppSpacing.xs),
         Text(
           label,
-          style: theme.textTheme.labelSmall?.copyWith(
+          style: theme.textTheme.labelMedium?.copyWith(
             fontWeight: AppTextStyles.fontWeightMedium,
             color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
           ),
@@ -529,39 +536,37 @@ class _MotivationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.sm),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFF0F9F6),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.emoji_events_outlined, color: Colors.orange, size: 20),
+            child: const Icon(Icons.emoji_events_outlined, color: Colors.orange, size: 24),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Keep it up! 💪",
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: AppTextStyles.fontWeightBold,
                     color: const Color(0xFF2E7D32),
-                    fontSize: AppTextStyles.fontSizeSm,
                   ),
                 ),
                 Text(
                   "Consistency is the key to your fitness goals.",
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFF2E7D32).withOpacity(0.7),
-                    fontSize: AppTextStyles.fontSizeXs,
                   ),
                 ),
               ],

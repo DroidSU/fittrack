@@ -62,28 +62,29 @@ class _ProteinCardState extends State<ProteinCard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(Icons.wine_bar, color: Colors.white, size: 12),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        "Today's Protein",
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: AppTextStyles.fontWeightBold,
-                        ),
-                      ),
-                    ],
-                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: AppSpacing.xs),
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.wine_bar, color: Colors.white, size: 16),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      "Today's Protein",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: AppTextStyles.fontWeightBold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: badgeBg,
                       borderRadius: BorderRadius.circular(16),
@@ -91,7 +92,7 @@ class _ProteinCardState extends State<ProteinCard> {
                     ),
                     child: Text(
                       "Goal: ${widget.target.toInt()}g",
-                      style: theme.textTheme.labelSmall?.copyWith(
+                      style: theme.textTheme.labelMedium?.copyWith(
                         color: isDark ? theme.textTheme.bodySmall?.color : Colors.grey[600],
                         fontWeight: AppTextStyles.fontWeightSemiBold,
                       ),
@@ -105,45 +106,51 @@ class _ProteinCardState extends State<ProteinCard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (child, animation) => FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0, 0.2),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) => FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.2),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            ),
+                          ),
+                          child: Text(
+                            "${widget.current.toInt()}g",
+                            key: ValueKey<int>(widget.current.toInt()),
+                            style: theme.textTheme.displayMedium?.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: AppTextStyles.fontWeightBold,
+                              fontSize: 44,
+                            ),
                           ),
                         ),
-                        child: Text(
-                          "${widget.current.toInt()}g",
-                          key: ValueKey<int>(widget.current.toInt()),
-                          style: theme.textTheme.displayMedium?.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: AppTextStyles.fontWeightBold,
-                            fontSize: AppTextStyles.fontSizeDisplay,
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            "/ ${widget.target.toInt()}g",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: Colors.grey[400],
+                              fontWeight: AppTextStyles.fontWeightNormal,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        "/ ${widget.target.toInt()}g",
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.grey[400],
-                          fontWeight: AppTextStyles.fontWeightNormal,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Container(
-                    height: 60, 
-                    width: 60,  
+                    height: 64, 
+                    width: 64,  
                     decoration: BoxDecoration(
                       color: AppColors.primary.withOpacity(0.15),
                       shape: BoxShape.circle,
@@ -151,7 +158,7 @@ class _ProteinCardState extends State<ProteinCard> {
                     alignment: Alignment.center,
                     child: Text(
                       WorkoutEmoji.bodybuilding.value, 
-                      style: const TextStyle(fontSize: AppTextStyles.fontSizeXxxl),
+                      style: const TextStyle(fontSize: 36),
                     ),
                   ),
                 ],
@@ -187,10 +194,9 @@ class _ProteinCardState extends State<ProteinCard> {
                 builder: (context, value, _) {
                   return Text(
                     "${(value * 100).toInt()}% of daily goal",
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: isDark ? theme.textTheme.bodySmall?.color?.withOpacity(0.6) : Colors.grey[600],
                       fontWeight: AppTextStyles.fontWeightMedium,
-                      fontSize: AppTextStyles.fontSizeXxs,
                     ),
                   );
                 },

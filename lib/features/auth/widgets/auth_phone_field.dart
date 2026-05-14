@@ -23,14 +23,14 @@ class AuthPhoneField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTextStyles.bodyMd.copyWith(
+          style: AppTextStyles.bodyLg.copyWith(
             fontWeight: FontWeight.w600,
             color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: AppSpacing.sm),
         Container(
-          height: 56,
+          height: 60,
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : Colors.grey[50],
             borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -42,17 +42,17 @@ class AuthPhoneField extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 24,
-                    height: 18,
+                    width: 28,
+                    height: 20,
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '+91',
-                    style: AppTextStyles.bodyMd.copyWith(
+                    style: AppTextStyles.bodyLg.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                     ),
@@ -60,14 +60,14 @@ class AuthPhoneField extends StatelessWidget {
                   const SizedBox(width: 4),
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    size: 16,
+                    size: 20,
                     color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   ),
                 ],
               ),
               const SizedBox(width: AppSpacing.md),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 child: VerticalDivider(
                   color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
                   width: 1,
@@ -78,13 +78,13 @@ class AuthPhoneField extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   keyboardType: TextInputType.phone,
-                  style: AppTextStyles.bodyMd.copyWith(
+                  style: AppTextStyles.bodyLg.copyWith(
                     fontWeight: FontWeight.w500,
                     letterSpacing: 1.2,
                   ),
                   decoration: InputDecoration(
                     hintText: 'Mobile Number',
-                    hintStyle: AppTextStyles.bodyMd.copyWith(
+                    hintStyle: AppTextStyles.bodyLg.copyWith(
                       color: (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary).withOpacity(0.5),
                     ),
                     border: InputBorder.none,

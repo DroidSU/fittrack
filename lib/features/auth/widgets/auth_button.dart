@@ -71,7 +71,7 @@ class AuthButton extends StatelessWidget {
               )
             : Text(
                 text,
-                style: AppTextStyles.bodyMd.copyWith(
+                style: AppTextStyles.bodyLg.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                   color: isSecondary 

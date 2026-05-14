@@ -63,6 +63,7 @@ class _OtpInputState extends State<OtpInput> {
                   textAlign: TextAlign.center,
                   maxLength: 1,
                   style: AppTextStyles.h2.copyWith(
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: isDark ? AppColors.darkPrimary : AppColors.primary,
                   ),
@@ -75,13 +76,13 @@ class _OtpInputState extends State<OtpInput> {
                     fillColor: isDark ? AppColors.darkSurface : Colors.grey[50],
                     contentPadding: EdgeInsets.zero,
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
                       borderSide: BorderSide(
                         color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
                       borderSide: BorderSide(
                         color: isDark ? AppColors.darkPrimary : AppColors.primary,
                         width: 2,

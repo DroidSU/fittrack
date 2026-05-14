@@ -95,18 +95,23 @@ class AuthSuccessScreen extends ConsumerWidget {
                           
                           Text(
                             "You're All Set!",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.h1.copyWith(
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                             ),
                           ).animate().fade(delay: 400.ms).slideY(begin: 0.2, end: 0),
                           
-                          const SizedBox(height: AppSpacing.sm),
+                          const SizedBox(height: 12),
                           
                           Text(
                             "Your number has been verified successfully.",
                             textAlign: TextAlign.center,
-                            style: AppTextStyles.bodyMd.copyWith(
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.bodyLg.copyWith(
                               color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                             ),
                           ).animate().fade(delay: 600.ms).slideY(begin: 0.2, end: 0),

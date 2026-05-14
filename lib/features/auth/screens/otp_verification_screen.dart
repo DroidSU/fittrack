@@ -78,6 +78,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            size: 22,
           ),
           onPressed: () => context.pop(),
         ),
@@ -123,12 +124,12 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                   children: [
                                     Text(
                                       authState.phoneNumber ?? "",
-                                      style: AppTextStyles.bodyMd.copyWith(
+                                      style: AppTextStyles.bodyLg.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                                       ),
                                     ),
-                                    const SizedBox(width: AppSpacing.sm),
+                                    const SizedBox(width: AppSpacing.md),
                                     TextButton(
                                       onPressed: () => context.pop(),
                                       style: TextButton.styleFrom(
@@ -140,6 +141,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                         'Edit',
                                         style: TextStyle(
                                           color: primaryColor,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -167,6 +169,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                           style: TextStyle(
                                             color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                                             fontWeight: FontWeight.w500,
+                                            fontSize: 14,
                                           ),
                                         )
                                       : TextButton(
@@ -181,6 +184,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                             style: TextStyle(
                                               color: primaryColor,
                                               fontWeight: FontWeight.bold,
+                                              fontSize: 16,
                                             ),
                                           ),
                                         ),

@@ -1,5 +1,4 @@
 import 'package:fittrack/theme/app_colors.dart';
-import 'package:fittrack/theme/app_spacing.dart';
 import 'package:fittrack/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -23,14 +22,15 @@ class AuthHeader extends StatelessWidget {
         Text(
           title,
           style: AppTextStyles.h1.copyWith(
+            fontSize: 28,
             color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: 8),
         Text(
           subtitle,
-          style: AppTextStyles.bodyMd.copyWith(
+          style: AppTextStyles.bodyLg.copyWith(
             color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
           ),
         ),
