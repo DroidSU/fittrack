@@ -12,8 +12,6 @@ class ProfileHeader extends StatelessWidget {
   final String name;
   final String fitnessGoal;
   final String? profileImageUrl;
-  final VoidCallback onEditPressed;
-  final VoidCallback onBackPressed;
   final VoidCallback onCameraPressed;
 
   const ProfileHeader({
@@ -21,8 +19,6 @@ class ProfileHeader extends StatelessWidget {
     required this.name,
     required this.fitnessGoal,
     this.profileImageUrl,
-    required this.onEditPressed,
-    required this.onBackPressed,
     required this.onCameraPressed,
   });
 
@@ -43,7 +39,7 @@ class ProfileHeader extends StatelessWidget {
       children: [
         // Premium Gradient Background with abstract shapes
         Container(
-          height: 380,
+          height: 310,
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -51,8 +47,8 @@ class ProfileHeader extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 AppColors.primary,
-                AppColors.primary.withOpacity(0.8),
-                const Color(0xFF4834D4),
+                AppColors.primary.withOpacity(0.85),
+                const Color(0xFF3F2B96),
               ],
             ),
           ),
@@ -60,171 +56,173 @@ class ProfileHeader extends StatelessWidget {
             children: [
               // Abstract soft circles
               Positioned(
-                top: -50,
-                left: -30,
-                child: _CircleShape(size: 200, color: Colors.white.withOpacity(0.1)),
+                top: -20,
+                left: -20,
+                child: _CircleShape(
+                  size: 160,
+                  color: Colors.white.withOpacity(0.08),
+                ),
               ),
               Positioned(
-                bottom: 40,
-                right: -60,
-                child: _CircleShape(size: 250, color: Colors.white.withOpacity(0.08)),
-              ),
-              Positioned(
-                top: 100,
-                right: 20,
-                child: _CircleShape(size: 120, color: Colors.white.withOpacity(0.05)),
+                bottom: 30,
+                right: -30,
+                child: _CircleShape(
+                  size: 180,
+                  color: Colors.white.withOpacity(0.06),
+                ),
               ),
             ],
           ),
         ),
-        
+
         // Content
-        SafeArea(
-          child: Column(
-            children: [
-              // Top Action Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: AppSpacing.md),
+
+                // Profile Image with Glow and Camera FAB
+                Stack(
+                  alignment: Alignment.bottomRight,
                   children: [
-                    IconButton(
-                      onPressed: onBackPressed,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.15),
-                        padding: const EdgeInsets.all(AppSpacing.sm),
+                    Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.4),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
-                    ),
-                    TextButton.icon(
-                      onPressed: onEditPressed,
-                      icon: const Icon(Icons.edit_outlined, color: Colors.white, size: 18),
-                      label: Text(
-                        "Edit Profile",
-                        style: theme.textTheme.labelLarge?.copyWith(
+                      child: CircleAvatar(
+                        radius: 56,
+                        backgroundColor: Colors.white24,
+                        backgroundImage: profileImage,
+                        child: profileImage == null
+                            ? const Icon(
+                                Icons.person_rounded,
+                                size: 55,
+                                color: Colors.white70,
+                              )
+                            : null,
+                      ),
+                    ).animate().scale(
+                          duration: 500.ms,
+                          curve: Curves.easeOutBack,
+                        ),
+                    GestureDetector(
+                      onTap: onCameraPressed,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt_rounded,
                           color: Colors.white,
-                          fontWeight: AppTextStyles.fontWeightMedium,
+                          size: 16,
                         ),
                       ),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.15),
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
-                      ),
-                    ),
+                    ).animate().scale(
+                          delay: 300.ms,
+                          duration: 400.ms,
+                          curve: Curves.easeOutBack,
+                        ),
                   ],
                 ),
-              ),
 
-              const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: AppSpacing.md),
 
-              // Profile Image with Glow and Camera FAB
-              Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
+                // User Info
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: AppTextStyles.fontWeightBold,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
+
+                const SizedBox(height: 4),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.4),
-                          blurRadius: 20,
-                          spreadRadius: 5,
+                      color: Colors.white.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.workspace_premium_rounded,
+                          color: Colors.amber,
+                          size: 13,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            fitnessGoal.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: AppTextStyles.fontWeightBold,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    child: CircleAvatar(
-                      radius: 55,
-                      backgroundColor: Colors.white24,
-                      backgroundImage: profileImage,
-                      child: profileImage == null
-                        ? const Icon(Icons.person_rounded, size: 60, color: Colors.white70)
-                        : null,
+                  ),
+                ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
+
+                const SizedBox(height: AppSpacing.md),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                  child: Text(
+                    "\"Discipline today, strength forever.\"",
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withOpacity(0.85),
+                      fontStyle: FontStyle.italic,
+                      fontWeight: AppTextStyles.fontWeightMedium,
                     ),
-                  ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
-                  
-                  GestureDetector(
-                    onTap: onCameraPressed,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
-                    ),
-                  ).animate().scale(delay: 400.ms, duration: 400.ms, curve: Curves.easeOutBack),
-                ],
-              ),
-
-              const SizedBox(height: AppSpacing.md),
-
-              // User Info
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: AppTextStyles.fontWeightBold,
-                    letterSpacing: -0.5,
                   ),
-                ),
-              ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
-
-              const SizedBox(height: AppSpacing.xs),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.workspace_premium_rounded, color: Colors.amber, size: 14),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          fitnessGoal.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: AppTextStyles.fontWeightBold,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2),
-
-              const SizedBox(height: AppSpacing.md),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                child: Text(
-                  "\"Discipline today, strength forever.\"",
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withOpacity(0.8),
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ).animate().fadeIn(delay: 400.ms),
-            ],
+                ).animate().fadeIn(delay: 400.ms),
+              ],
+            ),
           ),
         ),
       ],
@@ -243,10 +241,7 @@ class _CircleShape extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-      ),
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
 }

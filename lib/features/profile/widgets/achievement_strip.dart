@@ -83,7 +83,7 @@ class AchievementStrip extends StatelessWidget {
               color: iconBgColor,
               shape: BoxShape.circle,
             ),
-            child: Text(icon, style: const TextStyle(fontSize: 18)),
+            child: Text(icon, style: const TextStyle(fontSize: 20)),
           ),
           const SizedBox(height: 8),
           Text(
@@ -94,12 +94,14 @@ class AchievementStrip extends StatelessWidget {
               fontWeight: AppTextStyles.fontWeightBold,
             ),
           ),
+          const SizedBox(height: 2),
           Text(
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.hintColor.withOpacity(0.5),
+              fontWeight: AppTextStyles.fontWeightMedium,
               fontSize: 10,
             ),
           ),

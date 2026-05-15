@@ -68,7 +68,7 @@ class MetricCard extends StatelessWidget {
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: AppTextStyles.fontWeightBold,
               color: theme.colorScheme.onSurface,
-              fontSize: 13,
+              fontSize: 14,
             ),
           ),
         ],

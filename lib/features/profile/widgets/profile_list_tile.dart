@@ -38,19 +38,19 @@ class ProfileListTile extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 16),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: (iconColor ?? AppColors.primary).withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     icon,
                     color: iconColor ?? AppColors.primary,
-                    size: 20,
+                    size: 22,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -62,19 +62,20 @@ class ProfileListTile extends StatelessWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: AppTextStyles.fontWeightSemiBold,
                           color: titleColor ?? theme.colorScheme.onSurface,
                         ),
                       ),
                       if (subtitle != null) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 4),
                         Text(
                           subtitle!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.hintColor.withOpacity(0.5),
+                            fontSize: 13,
                           ),
                         ),
                       ],

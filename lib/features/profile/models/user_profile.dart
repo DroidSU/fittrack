@@ -1,4 +1,3 @@
-
 class UserProfile {
   final String name;
   final String gender;
@@ -46,7 +45,8 @@ class UserProfile {
       fitnessGoal: fitnessGoal ?? this.fitnessGoal,
       activityLevel: activityLevel ?? this.activityLevel,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      isOnboardingCompleted: isOnboardingCompleted ?? this.isOnboardingCompleted,
+      isOnboardingCompleted:
+          isOnboardingCompleted ?? this.isOnboardingCompleted,
     );
   }
 
